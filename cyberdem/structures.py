@@ -1,4 +1,4 @@
-"""CyberDEM DataTypes"""
+"""CyberDEM Structures Module"""
 
 '''
 CyberDEM Python
@@ -23,10 +23,18 @@ use and distribution.
 DM20-0711
 '''
 
-from enumerations import RelationshipType
+from .enumerations import RelationshipType
 
 
 class Relationship():
+    """[summary]
+
+    :raises TypeError: [description]
+    :raises TypeError: [description]
+    :raises TypeError: [description]
+    :return: [description]
+    :rtype: [type]
+    """
 
     def __init__(self, related_object_id=None, relationship_type=None,
             priviledges=None):

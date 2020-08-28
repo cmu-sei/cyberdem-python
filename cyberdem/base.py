@@ -25,14 +25,23 @@ DM20-0711
 
 from collections import OrderedDict
 from datetime import datetime, timedelta
-from enumerations import * 
-from structures import *
+from .enumerations import * 
+from .structures import *
 import sys
 import uuid
 
 
 class _CyberDEMBase():
-    """Base class for all CyberDEM objects"""
+    """Base class for all CyberDEM objects
+
+    Will create an appropriate ``id`` if one is not given.
+
+    :param id: string formatted UUIDv4
+    :type id: string, optional
+
+    :raises ValueError: if a given ``id`` is not a valid string representation
+        of a UUIDv4
+    """
 
     _type = None
     
@@ -72,16 +81,16 @@ class _CyberDEMBase():
 ## Second level CyberDEM objects
 class _CyberObject(_CyberDEMBase):
     """Class for all CyberDEM CyberObjects
+
+    Inherits :_CyberDEMBase:
+
     
-    Attributes
-    ----------
-    name : string
-        The name of the object
-    description : string
-        A description of the object
-    related_objects : RelatedObjectStruct
-        A list of related objects in the format (RelatedObjectID,
-            RelationshipType, RelatedObjectPrivileges)
+    :param name: The name of the object
+    :type name: string, optional
+    :param description: A description of the object
+    :type description: string
+    :param related_objects: A list of relationship object IDs
+    :type related_objects: list of relationship object IDs, optional
     """
 
     def __init__(self, name=None, description=None, related_objects=None,

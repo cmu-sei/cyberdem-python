@@ -1,4 +1,4 @@
-"""CyberDEM Enumerations"""
+"""CyberDEM Enumerations Module"""
 
 '''
 CyberDEM Python
@@ -6,22 +6,23 @@ CyberDEM Python
 Copyright 2020 Carnegie Mellon University.
 
 NO WARRANTY. THIS CARNEGIE MELLON UNIVERSITY AND SOFTWARE ENGINEERING INSTITUTE
-MATERIAL IS FURNISHED ON AN "AS-IS" BASIS. CARNEGIE MELLON UNIVERSITY MAKES NO 
-WARRANTIES OF ANY KIND, EITHER EXPRESSED OR IMPLIED, AS TO ANY MATTER 
-INCLUDING, BUT NOT LIMITED TO, WARRANTY OF FITNESS FOR PURPOSE OR 
-MERCHANTABILITY, EXCLUSIVITY, OR RESULTS OBTAINED FROM USE OF THE MATERIAL. 
-CARNEGIE MELLON UNIVERSITY DOES NOT MAKE ANY WARRANTY OF ANY KIND WITH RESPECT 
+MATERIAL IS FURNISHED ON AN "AS-IS" BASIS. CARNEGIE MELLON UNIVERSITY MAKES NO
+WARRANTIES OF ANY KIND, EITHER EXPRESSED OR IMPLIED, AS TO ANY MATTER
+INCLUDING, BUT NOT LIMITED TO, WARRANTY OF FITNESS FOR PURPOSE OR
+MERCHANTABILITY, EXCLUSIVITY, OR RESULTS OBTAINED FROM USE OF THE MATERIAL.
+CARNEGIE MELLON UNIVERSITY DOES NOT MAKE ANY WARRANTY OF ANY KIND WITH RESPECT
 TO FREEDOM FROM PATENT, TRADEMARK, OR COPYRIGHT INFRINGEMENT.
 
-Released under a MIT (SEI)-style license, please see license.txt or contact 
+Released under a MIT (SEI)-style license, please see license.txt or contact
 permission@sei.cmu.edu for full terms.
 
-[DISTRIBUTION STATEMENT A] This material has been approved for public release 
-and unlimited distribution.  Please see Copyright notice for non-US Government 
+[DISTRIBUTION STATEMENT A] This material has been approved for public release
+and unlimited distribution.  Please see Copyright notice for non-US Government
 use and distribution.
 
 DM20-0711
 '''
+
 
 class _CyberDEMEnumeration():
     """Super class for all CyberDEM enumerations"""
@@ -29,6 +30,17 @@ class _CyberDEMEnumeration():
     _opts = []
 
     def _check_prop(self, value):
+        """Checks to see if ``value`` is an allowed enumeration value.
+
+        Campares the given value to to the allowed options for the current
+        enumeration class (sub-class to _CyberDEMEnumeration).
+
+        :param value: user-provided value for the enumeration type
+        :type value: required
+
+        :raises ValueError: if the ``value`` is not in the allowed options.
+        """
+
         if value.lower() not in [o.lower() for o in self._opts]:
             raise ValueError(
                 f'"{value}" is not an acceptable {self.__class__.__name__}. '
@@ -40,192 +52,257 @@ class _CyberDEMEnumeration():
 
 
 class CyberEventPhaseType(_CyberDEMEnumeration):
-    """CyberDEM CyberEventPhaseType enumeration"""
+    """CyberDEM CyberEventPhaseType enumeration
+
+    :options: 'Continue', 'ContinueWithChanges', 'End', 'Start', 'Suspend'
+    """
 
     _opts = [
-        'Start',
-        'Suspend',
         'Continue',
         'ContinueWithChanges',
-        'End'
+        'End',
+        'Start',
+        'Suspend'
     ]
 
 
 class DataLinkProtocolType(_CyberDEMEnumeration):
-    """CyberDEM DataLinkProtocolType enumeration"""
+    """CyberDEM DataLinkProtocolType enumeration
+
+    :options: 'ATM', 'Bluetooth', 'Ethernet', 'LocalTalk', 'PPP', 'TokenRing',
+        'VLAN', 'WiFi', '1553Bus'
+    """
 
     _opts = [
-        'Ethernet',
-        'WiFi',
         'ATM',
+        'Bluetooth',
+        'Ethernet',
         'LocalTalk',
         'PPP',
         'TokenRing',
         'VLAN',
-        'Bluetooth',
+        'WiFi',
         '1553Bus'
     ]
 
 
 class DataStatus(_CyberDEMEnumeration):
-    """CyberDEM DataStatus enumeration"""
+    """CyberDEM DataStatus enumeration
+
+    :options: 'Corrupted', 'Erased', 'Manipulated', 'NonDecryptable',
+        'Uncompromised'
+    """
 
     _opts = [
-        'Uncompromised',
         'Corrupted',
+        'Erased',
         'Manipulated',
         'NonDecryptable',
-        'Erased'
+        'Uncompromised'
     ]
 
 
 class DataType(_CyberDEMEnumeration):
-    """CyberDEM DataType enumeration"""
+    """CyberDEM DataType enumeration
+
+    :options: 'Code', 'Credentials', 'File'
+    """
 
     _opts = [
-        'File',
         'Code',
-        'Credentials'
+        'Credentials',
+        'File'
     ]
 
 
 class DeviceType(_CyberDEMEnumeration):
-    """CyberDEM DeviceType enumeration"""
+    """CyberDEM DeviceType enumeration
+
+    :options: 'Communications', 'ComputerNode', 'Controller', 'Generic', 'HMI',
+        'IoT', 'Monitoring', 'Networking', 'PortableComputer', 'Printer',
+        'Scanner', 'Sensor', 'StorageDevice'
+    """
 
     _opts = [
-        'Generic',
-        'Networking',
+        'Communications',
         'ComputerNode',
-        'PortableComputer',
         'Controller',
-        'StorageDevice',
-        'Sensor',
+        'Generic',
+        'HMI',
+        'IoT',
+        'Monitoring',
+        'Networking',
+        'PortableComputer',
         'Printer',
         'Scanner',
-        'Communications',
-        'HMI',
-        'Monitoring',
-        'IoT'
+        'Sensor',
+        'StorageDevice'
     ]
 
     def _check_prop(self, value):
+        """Checks to see if ``value`` is an allowed enumeration value.
+
+        Overrides the :func:`_CyberDEMEnumeration._check_prop` function from
+        the super :class:`_CyberDEMEnumeration`
+
+        Campares the given value to to the allowed options for the current
+        enumeration class (sub-class to _CyberDEMEnumeration).
+
+        :param value: user-provided value for the enumeration type
+        :type value: list, required
+
+        :raises ValueError: if the values in ``value`` are not in the allowed
+            options.
+        """
         if not isinstance(value, list):
             raise ValueError(f'"types" should be a list of DeviceTypes')
         for t in value:
             if t.lower() not in [o.lower() for o in self._opts]:
                 raise ValueError(f'"{t}" is not a valid value for DeviceType')
             if t not in self._opts:
-                print(f'Warning: "{t}" is not the same capitalization as '
+                print(
+                    f'Warning: "{t}" is not the same capitalization as '
                     f'{self.__class__.__name__} option.')
 
 
 class EncryptionType(_CyberDEMEnumeration):
-    """CyberDEM EncryptionType enumeration"""
+    """CyberDEM EncryptionType enumeration
+
+    :options: 'AES', 'DES', 'RSA', 'SHA', 'TripleDES', 'TwoFish'
+    """
 
     _opts = [
-        'DES',
-        'TripleDES',
-        'RSA',
         'AES',
-        'TwoFish',
-        'SHA'
+        'DES',
+        'RSA',
+        'SHA',
+        'TripleDES',
+        'TwoFish'
     ]
 
 
 class HardwareDamageType(_CyberDEMEnumeration):
-    """CyberDEM HardwareDamageType enumeration"""
+    """CyberDEM HardwareDamageType enumeration
+
+    :options: 'BootLoop', 'HardDriveErased', 'PhysicalDestruction',
+    """
 
     _opts = [
         'BootLoop',
-        'PhysicalDestruction',
-        'HardDriveErased'
+        'HardDriveErased',
+        'PhysicalDestruction'
     ]
 
 
 class HardwareDegradeType(_CyberDEMEnumeration):
-    """CyberDEM HardwareDegradeType enumeration"""
+    """CyberDEM HardwareDegradeType enumeration
+
+    :options: 'BlueScreen', 'Display', 'Keyboard', 'Mouse', 'RandomText',
+        'Reboot', 'Sound'
+    """
 
     _opts = [
+        'BlueScreen',
+        'Display',
         'Keyboard',
         'Mouse',
-        'Display',
-        'Sound',
-        'BlueScreen',
         'RandomText',
-        'Reboot'
+        'Reboot',
+        'Sound'
     ]
 
 
 class LoadRateType(_CyberDEMEnumeration):
-    """CyberDEM LoadRateType enumeration"""
+    """CyberDEM LoadRateType enumeration
+
+    :options: 'Download', 'Upload'
+    """
 
     _opts = [
-        'Upload',
-        'Download'
+        'Download',
+        'Upload'
     ]
 
 
 class MessageType(_CyberDEMEnumeration):
-    """CyberDEM MessageType enumeration"""
+    """CyberDEM MessageType enumeration
+
+    :options: 'Chat', 'Email', 'SocialMedia', 'Text'
+    """
 
     _opts = [
-        'Email',
         'Chat',
-        'Text',
-        'SocialMedia'
+        'Email',
+        'SocialMedia',
+        'Text'
     ]
 
 
 class NetworkProtocolType(_CyberDEMEnumeration):
-    """CyberDEM NetworkProtocolType enumeration"""
+    """CyberDEM NetworkProtocolType enumeration
+
+    :options: 'ARP', 'ICMP', 'InternetProtocol', 'IPsec', 'NAT', 'OSPF', 'RIP'
+    """
 
     _opts = [
-        'InternetProtocol',
-        'NAT',
-        'ICMP',
         'ARP',
-        'RIP',
+        'ICMP',
+        'InternetProtocol',
+        'IPsec',
+        'NAT',
         'OSPF',
-        'IPsec'
+        'RIP'
     ]
 
 
 class OperatingSystemType(_CyberDEMEnumeration):
-    """CyberDEM OperatingSystemType enumeration"""
+    """CyberDEM OperatingSystemType enumeration
+
+    :options: 'Android', 'AppleiOS', 'AppleMacOS', 'BellLabsUnix', 'BSDUnix',
+        'CiscoIOS', 'DECHP_UX', 'DECVMS', 'Firmware', 'GNUUnix', 'IBMOS_2',
+        'LinuxRedHat', 'MicrosoftDOS', 'MicrosoftWindows', 'OpenSolaris',
+        'Ubuntu'
+    """
 
     _opts = [
-        'MicrosoftDOS',
-        'MicrosoftWindows',
+        'Android',
+        'AppleiOS',
         'AppleMacOS',
         'BellLabsUnix',
         'BSDUnix',
-        'GNUUnix',
-        'LinuxRedHat',
-        'Ubuntu',
-        'OpenSolaris',
+        'CiscoIOS',
         'DECHP_UX',
         'DECVMS',
+        'Firmware',
+        'GNUUnix',
         'IBMOS_2',
-        'Android',
-        'AppleiOS',
-        'CiscoIOS',
-        'Firmware'                       
+        'LinuxRedHat',
+        'MicrosoftDOS',
+        'MicrosoftWindows',
+        'OpenSolaris',
+        'Ubuntu'
     ]
 
 
 class PacketManipulationType(_CyberDEMEnumeration):
-    """CyberDEM PacketManipulationType enumeration"""
+    """CyberDEM PacketManipulationType enumeration
+
+    :options: 'Corruption', 'Dropped', 'Duplication', 'Redordering'
+    """
 
     _opts = [
-        'Duplication',
         'Corruption',
-        'Redordering',
-        'Dropped'
+        'Dropped',
+        'Duplication',
+        'Redordering'
     ]
 
 
 class PhysicalLayerType(_CyberDEMEnumeration):
-    """CyberDEM PhysicalLayerType enumeration"""
+    """CyberDEM PhysicalLayerType enumeration
+
+    :options: 'Wired', 'Wireless'
+    """
 
     _opts = [
         'Wired',
@@ -234,35 +311,47 @@ class PhysicalLayerType(_CyberDEMEnumeration):
 
 
 class ReconType(_CyberDEMEnumeration):
-    """CyberDEM ReconType enumeration"""
+    """CyberDEM ReconType enumeration
+
+    :options: 'AccountEnumeration', 'ARPScan', 'DeviceEnumeration',
+        'DNSEnumeration', 'DomainEnumeration', 'LDAPScan', 'NetBiosScan',
+        'NetworkMap', 'NTPEnumeration', 'OSScan', 'Ping', 'PingScan',
+        'PortScan', 'PortSweep', 'ServiceEnumeration', 'SMTPEnumeration',
+        'SNMPSweep', 'TraceRoute', 'UNIX-LinuxEnumeration',
+        'VulnerabilityEnumeration', 'WindowsEnumeration'
+    """
 
     _opts = [
+        'AccountEnumeration',
+        'ARPScan',
+        'DeviceEnumeration',
+        'DNSEnumeration',
+        'DomainEnumeration',
+        'LDAPScan',
+        'NetBiosScan',
+        'NetworkMap',
+        'NTPEnumeration',
+        'OSScan',
         'Ping',
         'PingScan',
         'PortScan',
         'PortSweep',
-        'TraceRoute',
-        'NetworkMap',
-        'VulnerabilityEnumeration',
-        'DeviceEnumeration',
-        'OSScan',
         'ServiceEnumeration',
-        'DomainEnumeration',
-        'AccountEnumeration',
-        'NetBiosScan',
-        'SNMPSweep',
-        'LDAPScan',
-        'NTPEnumeration',
         'SMTPEnumeration',
-        'DNSEnumeration',
-        'WindowsEnumeration',
+        'SNMPSweep',
+        'TraceRoute',
         'UNIX-LinuxEnumeration',
-        'ARPScan'
+        'VulnerabilityEnumeration',
+        'WindowsEnumeration'
     ]
 
 
 class RelationshipType(_CyberDEMEnumeration):
-    """CyberDEM RelationshipType enumeration"""
+    """CyberDEM RelationshipType enumeration
+
+    :options: 'Administers', 'ComponentOf', 'ContainedIn', 'ProvidedBy',
+        'ResidesOn'
+    """
 
     _opts = [
         'Administers',
@@ -274,50 +363,63 @@ class RelationshipType(_CyberDEMEnumeration):
 
 
 class SensitivityType(_CyberDEMEnumeration):
-    """CyberDEM SensitivityType enumeration"""
+    """CyberDEM SensitivityType enumeration
+
+    :options: 'Confidential', 'CosmicTopSecret', 'FOUO', 'FVEY', 'GDPR',
+        'HIPPA', 'NATOConfidential', 'NATORestricted', 'NATOSecret', 'PII',
+        'Proprietary', 'Public', 'Secret', 'SecretNoForn', 'TS', 'TS_SCI',
+        'Unclassified'
+    """
 
     _opts = [
-        'Unclassified',
         'Confidential',
+        'CosmicTopSecret',
         'FOUO',
+        'FVEY',
+        'GDPR',
+        'HIPPA',
+        'NATOConfidential',
+        'NATORestricted',
+        'NATOSecret',
+        'PII',
+        'Proprietary',
+        'Public',
         'Secret',
         'SecretNoForn',
         'TS',
         'TS_SCI',
-        'NATORestricted',
-        'NATOConfidential',
-        'NATOSecret',
-        'CosmicTopSecret',
-        'FVEY',
-        'Proprietary',
-        'PII',
-        'HIPPA',
-        'GDPR',
-        'Public'
+        'Unclassified'
     ]
 
 
 class ServiceType(_CyberDEMEnumeration):
-    """CyberDEM ServiceType enumeration"""
+    """CyberDEM ServiceType enumeration
+
+    :options: 'ChatServer', 'DatabaseServer', 'DomainNameServer',
+        'EmailServer', 'FileShare', 'Forum', 'SocialMediaServer', 'WebService'
+    """
 
     _opts = [
+        'ChatServer',
+        'DatabaseServer',
         'DomainNameServer',
         'EmailServer',
-        'WebService',
-        'DatabaseServer',
         'FileShare',
-        'ChatServer',
         'Forum',
-        'SocialMediaServer'
+        'SocialMediaServer',
+        'WebService'
     ]
 
 
 class SystemType(_CyberDEMEnumeration):
-    """CyberDEM SystemType enumeration"""
+    """CyberDEM SystemType enumeration
+
+    :options: 'C2', 'Generic', 'ICS', 'SCADA'
+    """
 
     _opts = [
-        'Generic',
-        'SCADA',
         'C2',
-        'ICS'
+        'Generic',
+        'ICS',
+        'SCADA'
     ]
