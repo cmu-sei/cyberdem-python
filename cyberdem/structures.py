@@ -23,7 +23,7 @@ use and distribution.
 DM20-0711
 '''
 
-from .enumerations import RelationshipType
+from enumerations import RelationshipType
 
 
 class Relationship():

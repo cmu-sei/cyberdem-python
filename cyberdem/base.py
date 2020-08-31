@@ -25,8 +25,8 @@ DM20-0711
 
 from collections import OrderedDict
 from datetime import datetime, timedelta
-from .enumerations import * 
-from .structures import *
+from enumerations import * 
+from structures import *
 import sys
 import uuid
 
@@ -74,8 +74,16 @@ class _CyberDEMBase():
         return string
 
     def __repr__(self):
-
         return str(self.__dict__)
+
+    def _serialize(self):
+        serialized = {}
+        for key, value in self.__dict__.items(): 
+            if key.startswith('_'):
+                serialized[key[1:]] = value
+            else:
+                serialized[key] = value
+        return serialized
 
 
 ## Second level CyberDEM objects
