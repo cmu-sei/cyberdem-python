@@ -27,6 +27,7 @@ from collections import OrderedDict
 from datetime import datetime, timedelta
 from enumerations import * 
 from structures import *
+import inspect
 import sys
 import uuid
 
@@ -62,6 +63,16 @@ class _CyberDEMBase():
             raise ValueError(
                 f'"{value}"" is not a valid value for id. Must be a UUIDv4.')
         self._id = value
+
+    '''
+    def __dir__(self):
+        print("GETTING")
+        attributes = []
+        for a in inspect.getmembers(self, lambda a:not(inspect.isfunction(a))):
+            if not a[0].startswith('__'):
+                attributes.append(a[0])
+        return attributes
+        '''
 
     def __str__(self):
         string = self._type + "("
