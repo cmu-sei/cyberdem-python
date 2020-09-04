@@ -23,10 +23,11 @@ use and distribution.
 DM20-0711
 '''
 
+
 from collections import OrderedDict
 from datetime import datetime, timedelta
-from enumerations import * 
-from structures import *
+from cyberdem.enumerations import *
+from cyberdem.structures import *
 import inspect
 import sys
 import uuid
@@ -64,16 +65,6 @@ class _CyberDEMBase():
                 f'"{value}"" is not a valid value for id. Must be a UUIDv4.')
         self._id = value
 
-    '''
-    def __dir__(self):
-        print("GETTING")
-        attributes = []
-        for a in inspect.getmembers(self, lambda a:not(inspect.isfunction(a))):
-            if not a[0].startswith('__'):
-                attributes.append(a[0])
-        return attributes
-        '''
-
     def __str__(self):
         string = self._type + "("
         for attr in self.__dict__:
@@ -89,11 +80,16 @@ class _CyberDEMBase():
 
     def _serialize(self):
         serialized = {}
-        for key, value in self.__dict__.items(): 
-            if key.startswith('_'):
-                serialized[key[1:]] = value
+        for key, value in self.__dict__.items():
+            if isinstance(value, (datetime, timedelta)):
+                s_value = str(value)
             else:
-                serialized[key] = value
+                s_value = value
+            if key.startswith('_'):
+                serialized[key[1:]] = s_value
+            else:
+                serialized[key] = s_value
+            serialized['_type'] = self._type
         return serialized
 
 
@@ -465,7 +461,16 @@ class Device(_CyberObject):
 
     @network_interfaces.setter
     def network_interfaces(self, value):
-        NetworkInterface()._check_prop(value)
+        if not isinstance(value, list):
+            raise TypeError(
+                f'{type(value)} is not a valid type for network_interface.'
+                f'Must be a list of tuples. Ex. "[(\'eth0\', \'1.2.3.4\'), '
+                f'(...)]"')
+        for net_int in value:
+            if not isinstance(net_int, tuple):
+                raise TypeError(
+                    f'{type(net_int)} for {net_int} should be a tuple. Ex. '
+                    f'"(\'eth0\', \'1.2.3.4\')"')
         self._network_interfaces = value
 
 
@@ -504,41 +509,6 @@ class Network(_CyberObject):
                 f'{type(value)} is not a valid type for mask. Must be '
                 f'string.')
         self._mask = value
-
-
-class NetworkInterface(_CyberObject):
-    _type = "NetworkInterface"
-
-    def __init__(self, name=None, address=None, **kwargs):
-        super().__init__(**kwargs)
-        if name:
-            self.name = name
-        if address:
-            self.address = address
-
-    @property
-    def name(self):
-        return self._name
-
-    @name.setter
-    def name(self, value):
-        if not isinstance(value, str):
-            raise TypeError(
-                f'{type(value)} is not a valid type for name. Must be '
-                f'string.')
-        self._name = value
-
-    @property
-    def address(self):
-        return self._address
-
-    @address.setter
-    def address(self, value):
-        if not isinstance(value, str):
-            raise TypeError(
-                f'{type(value)} is not a valid type for address. Must be '
-                f'string.')
-        self._address = value
 
 
 class NetworkLink(_CyberObject):
@@ -637,7 +607,16 @@ class NetworkLink(_CyberObject):
 
     @network_interfaces.setter
     def network_interfaces(self, value):
-        NetworkInterface()._check_prop(value)
+        if not isinstance(value, list):
+            raise TypeError(
+                f'{type(value)} is not a valid type for network_interface.'
+                f'Must be a list of tuples. Ex. "[(\'eth0\', \'1.2.3.4\'), '
+                f'(...)]"')
+        for net_int in value:
+            if not isinstance(net_int, tuple):
+                raise TypeError(
+                    f'{type(net_int)} for {net_int} should be a tuple. Ex. '
+                    f'"(\'eth0\', \'1.2.3.4\')"')
         self._network_interfaces = value
 
 

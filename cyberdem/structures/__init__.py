@@ -23,11 +23,12 @@ use and distribution.
 DM20-0711
 '''
 
-from enumerations import RelationshipType
+import uuid
+from cyberdem.enumerations import RelationshipType
 
 
 class Relationship():
-    """[summary]
+    """Represents a relationship between two CyberObjects.
 
     :raises TypeError: [description]
     :raises TypeError: [description]
@@ -36,33 +37,44 @@ class Relationship():
     :rtype: [type]
     """
 
-    def __init__(self, related_object_id=None, relationship_type=None,
-            priviledges=None):
-        self.related_object_id = related_object_id
-        if relationship_type:
-            self.relationship_type = relationship_type
+    def __init__(self, related_object_struct, id=None, priviledges=None):
+        if id is None:
+            id = str(uuid.uuid4())
+        self.id = id
+        self.related_object_struct = related_object_struct
         if priviledges:
             self.priviledges = priviledges
+        
+    @property
+    def id(self):
+        return self._id
+
+    @id.setter
+    def id(self, value):
+        try:
+            uuid.UUID(value)
+        except ValueError:
+            raise ValueError(
+                f'"{value}"" is not a valid value for id. Must be a UUIDv4.')
+        self._id = value
 
     @property
-    def related_object_id(self):
-        return self._related_object_id
+    def related_object_struct(self):
+        return self._related_object_struct
 
-    @related_object_id.setter
-    def related_object_id(self, value):
-        if value is None:
+    @related_object_struct.setter
+    def related_object_struct(self, value):
+        if not isinstance(value, tuple):
             raise TypeError(
-                f'Relationship object must have a related_object_id.')
-        self._related_object_id = value
-
-    @property
-    def relationship_type(self):
-        return self._relationship_type
-
-    @relationship_type.setter
-    def relationship_type(self, value):
-        RelationshipType()._check_prop(value)
-        self._relationship_type = value
+                f'{type(value)} is not a valid type for related_object_struct.'
+                f' Must be a 3-tuple. Ex. "(object_A_ID, RelationshipType, '
+                f'object_B_ID)"')
+        if len(value) != 3:
+            raise ValueError(
+                f'related_object_struct should have three items. Ex. '
+                f'"(object_A_ID, RelationshipType, object_B_ID)"')
+        RelationshipType()._check_prop(value[1])
+        self._related_object_struct = value
     
     @property
     def priviledges(self):

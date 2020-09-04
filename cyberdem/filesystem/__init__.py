@@ -24,7 +24,7 @@ DM20-0711
 '''
 
 
-import base
+from cyberdem import base
 import inspect
 import json
 import os
@@ -39,8 +39,8 @@ class FileSystem():
     # find the types of objects allowed from the base module and map the "type"
     # attribute to the class method 
     obj_types = {}
-    for name, obj in inspect.getmembers(base):
-        if inspect.isclass(obj) and obj.__module__ == 'base':
+    for name, obj in inspect.getmembers(base, inspect.isclass):
+        if obj.__module__ == 'cyberdem.base':
             if obj._type:
                 obj_types[obj._type] = obj
 
@@ -131,7 +131,6 @@ class FileSystem():
                 for root, _, files in os.walk(filepath):
                     if i+'.json' in files:
                         obj_type = os.path.split(root)[1]
-                        print(os.path.join(root, i) +'.json')
                         with open(os.path.join(root, i) +'.json') as json_file:
                             obj = json.load(json_file)
                         json_file.close()
@@ -196,24 +195,26 @@ class FileSystem():
                     a for a in dir(self.obj_types[os.path.split(path)[1]])
                     if not a.startswith('_') and a not in get_attrs]
                 get_attrs.extend(type_attrs)
+            get_attrs.append('_type')
         else:
             get_attrs = q_select.split(',')
 
         # find all of the attribute names in the WHERE clause
-        clauses = re.split('and | or', q_where)
-        where_attrs = []
-        for c in clauses:
-            if '==' in c: operator = '=='
-            elif '!=' in c: operator = '!='
-            elif '<' in c: operator = '<'
-            elif '>' in c: operator = '>'
-            elif '<=' in c: operator = '<='
-            elif '>=' in c: operator = '>='
-            else:
-                raise ValueError(f'Unrecognized operator in "{c}"')
-            clause = re.split(operator, c)
-            attr = clause[0].strip().lstrip('(')
-            where_attrs.append((attr, operator))
+        if q_where:
+            clauses = re.split('and | or', q_where)
+            where_attrs = []
+            for c in clauses:
+                if '==' in c: operator = '=='
+                elif '!=' in c: operator = '!='
+                elif '<' in c: operator = '<'
+                elif '>' in c: operator = '>'
+                elif '<=' in c: operator = '<='
+                elif '>=' in c: operator = '>='
+                else:
+                    raise ValueError(f'Unrecognized operator in "{c}"')
+                clause = re.split(operator, c)
+                attr = clause[0].strip().lstrip('(')
+                where_attrs.append((attr, operator))
 
         # search each file in each path for the desired attributes
         selected = []
@@ -235,9 +236,7 @@ class FileSystem():
                         except KeyError:
                             where_check = where_check.replace(''.join(attr), "'"+attr[0]+"'"+attr[1])
                     
-                    print(where_check)
                     matches = eval(where_check)
-                    print(matches)
                     if not matches:
                         continue
 

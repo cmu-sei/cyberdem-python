@@ -146,7 +146,7 @@ class DeviceType(_CyberDEMEnumeration):
         the super :class:`_CyberDEMEnumeration`
 
         Campares the given value to to the allowed options for the current
-        enumeration class (sub-class to _CyberDEMEnumeration).
+        enumeration class (sub-class to :class:`_CyberDEMEnumeration`).
 
         :param value: user-provided value for the enumeration type
         :type value: list, required

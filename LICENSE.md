@@ -1,4 +1,4 @@
-# CyberDEM Python
+# CyberDEM Python License
 
 Copyright 2020 Carnegie Mellon University.
 
