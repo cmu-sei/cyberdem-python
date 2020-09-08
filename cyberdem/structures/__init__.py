@@ -1,27 +1,28 @@
-"""CyberDEM Structures Module"""
+"""
+CyberDEM Structures Module provides classes for CyberDEM DataTypes
 
-'''
 CyberDEM Python
 
 Copyright 2020 Carnegie Mellon University.
 
 NO WARRANTY. THIS CARNEGIE MELLON UNIVERSITY AND SOFTWARE ENGINEERING INSTITUTE
-MATERIAL IS FURNISHED ON AN "AS-IS" BASIS. CARNEGIE MELLON UNIVERSITY MAKES NO 
-WARRANTIES OF ANY KIND, EITHER EXPRESSED OR IMPLIED, AS TO ANY MATTER 
-INCLUDING, BUT NOT LIMITED TO, WARRANTY OF FITNESS FOR PURPOSE OR 
-MERCHANTABILITY, EXCLUSIVITY, OR RESULTS OBTAINED FROM USE OF THE MATERIAL. 
-CARNEGIE MELLON UNIVERSITY DOES NOT MAKE ANY WARRANTY OF ANY KIND WITH RESPECT 
+MATERIAL IS FURNISHED ON AN "AS-IS" BASIS. CARNEGIE MELLON UNIVERSITY MAKES NO
+WARRANTIES OF ANY KIND, EITHER EXPRESSED OR IMPLIED, AS TO ANY MATTER
+INCLUDING, BUT NOT LIMITED TO, WARRANTY OF FITNESS FOR PURPOSE OR
+MERCHANTABILITY, EXCLUSIVITY, OR RESULTS OBTAINED FROM USE OF THE MATERIAL.
+CARNEGIE MELLON UNIVERSITY DOES NOT MAKE ANY WARRANTY OF ANY KIND WITH RESPECT
 TO FREEDOM FROM PATENT, TRADEMARK, OR COPYRIGHT INFRINGEMENT.
 
-Released under a MIT (SEI)-style license, please see license.txt or contact 
+Released under a MIT (SEI)-style license, please see license.txt or contact
 permission@sei.cmu.edu for full terms.
 
-[DISTRIBUTION STATEMENT A] This material has been approved for public release 
-and unlimited distribution.  Please see Copyright notice for non-US Government 
+[DISTRIBUTION STATEMENT A] This material has been approved for public release
+and unlimited distribution.  Please see Copyright notice for non-US Government
 use and distribution.
 
 DM20-0711
-'''
+"""
+
 
 import uuid
 from cyberdem.enumerations import RelationshipType
@@ -30,21 +31,39 @@ from cyberdem.enumerations import RelationshipType
 class Relationship():
     """Represents a relationship between two CyberObjects.
 
-    :raises TypeError: [description]
-    :raises TypeError: [description]
-    :raises TypeError: [description]
-    :return: [description]
-    :rtype: [type]
+    Given two CyberObjects A and B, where A administers B, the
+    ``related_object_struct`` would be represented as (A_ID, "Administers",
+    B_ID).
+
+    :param related_object_struct: defines the relationship between the two
+        objects; format: (ObjA_ID_string,
+        :class:`~cyberdem.enumerations.RelationshipType` string,
+        ObjB_ID_string)
+    :type related_object_struct: 3-tuple, required
+    :param id: string formatted UUIDv4 prefixed with "relationship--"
+    :type id: string, optional
+    :param privileges: [desc]
+    :type privileges: list of strings, optional
+
+    :raises ValueError: if the provided ``id`` is not a string formatted UUIDv4
+        prefixed with "relationship--"
+
+    :Example:
+        >>> from cyberdem.base import Application,Device
+        >>> my_application = Application()
+        >>> my_device = Device()
+        >>> rel_struct = (my_application.id, 'Administers', my_device.id)
+        >>> my_rel = Relationship(rel_struct, privileges=['priv1', 'priv2'])
     """
 
-    def __init__(self, related_object_struct, id=None, priviledges=None):
+    def __init__(self, related_object_struct, id=None, privileges=None):
         if id is None:
-            id = str(uuid.uuid4())
+            id = 'relationship--' + str(uuid.uuid4())
         self.id = id
         self.related_object_struct = related_object_struct
-        if priviledges:
-            self.priviledges = priviledges
-        
+        if privileges:
+            self.privileges = privileges
+
     @property
     def id(self):
         return self._id
@@ -52,10 +71,10 @@ class Relationship():
     @id.setter
     def id(self, value):
         try:
-            uuid.UUID(value)
+            uuid.UUID(value.replace('relationship--', ''))
         except ValueError:
             raise ValueError(
-                f'"{value}"" is not a valid value for id. Must be a UUIDv4.')
+                f'"{value}" is not a valid value for id. Must be a UUIDv4.')
         self._id = value
 
     @property
@@ -75,19 +94,68 @@ class Relationship():
                 f'"(object_A_ID, RelationshipType, object_B_ID)"')
         RelationshipType()._check_prop(value[1])
         self._related_object_struct = value
-    
-    @property
-    def priviledges(self):
-        return self._priviledges
 
-    @priviledges.setter
-    def priviledges(self, value):
+    @property
+    def privileges(self):
+        return self._privileges
+
+    @privileges.setter
+    def privileges(self, value):
         if not isinstance(value, list):
             raise TypeError(
-                f'{type(value)} is not a valid type for priviledges. Must '
+                f'{type(value)} is not a valid type for privileges. Must '
                 f'be list of strings.')
         for v in value:
             if not isinstance(v, str):
                 raise TypeError(
                     f'RelatedObject privilege list takes only string types')
-        self._priviledges = value
+        self._privileges = value
+
+
+class TargetStruct():
+    """A CyberDEM dataType that maps a target to a set of characteristics.
+
+    :param target_id: the unique ID of the target object
+    :type target_id: string, required
+    :param modifiers: key, value pairs describing characteristics of the target
+    :type modifiers: dictionary, optional
+
+    :raises ValueError: if the provided ``target_id`` is not a string formatted
+        UUIDv4.
+
+    :Example:
+        >>> the_target = TargetStruct("46545b7a-1840-4e34-a26f-aef5eb954b25",\
+            modifiers={"characteristic":"value"})
+    """
+
+    def __init__(self, target_id, modifiers=None):
+        self.id = 'target-struct--' + str(uuid.uuid4)
+        self.target_id = target_id
+        if modifiers:
+            self.modifiers = modifiers
+
+    @property
+    def target_id(self):
+        return self._target_id
+
+    @target_id.setter
+    def target_id(self, value):
+        try:
+            uuid.UUID(value)
+        except ValueError:
+            raise ValueError(
+                f'"{value}" is not a valid value for target_id. Must be a '
+                f'UUIDv4.')
+        self._target_id = value
+
+    @property
+    def modifiers(self):
+        return self._modifiers
+
+    @modifiers.setter
+    def modifiers(self, value):
+        if not isinstance(value, list):
+            raise TypeError(
+                f'{type(value)} is not a valid type for modifiers. Must '
+                f'be a dictionary.')
+        self._modifiers = value

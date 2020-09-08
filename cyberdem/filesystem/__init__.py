@@ -1,6 +1,6 @@
-"""CyberDEM FileSystem Module"""
+"""
+CyberDEM FileSystem Module
 
-'''
 CyberDEM Python
 
 Copyright 2020 Carnegie Mellon University.
@@ -21,7 +21,7 @@ and unlimited distribution.  Please see Copyright notice for non-US Government
 use and distribution.
 
 DM20-0711
-'''
+"""
 
 
 from cyberdem import base
@@ -34,22 +34,31 @@ import re
 class FileSystem():
     """Create a directory structure and file storage and retrieval methods.
 
+    Creates file storage, retrieval, and query methods for storing and
+    retrieving CyberObjects, CyberEvents, and Relationships.
+
+    :param path: directory path to store CyberDEM json files; can be existing
+        directory or non-existing
+    :type path: string, required
+
+    :Example:
+        >>> from cyberdem import filesystem
+        >>> fs = filesystem.FileSystem("./test-fs")
+        Using existing FileSystem at ./test-fs
+        >>> fs.path
+        './test-fs'
     """
 
     # find the types of objects allowed from the base module and map the "type"
-    # attribute to the class method 
+    # attribute to the class method
     obj_types = {}
-    for name, obj in inspect.getmembers(base, inspect.isclass):
-        if obj.__module__ == 'cyberdem.base':
-            if obj._type:
-                obj_types[obj._type] = obj
+    for name, test_obj in inspect.getmembers(base, inspect.isclass):
+        if test_obj.__module__ == 'cyberdem.base':
+            if test_obj._type:
+                obj_types[test_obj._type] = test_obj
 
     def __init__(self, path):
-        """Creates a directory for storing CyberDEM objects and Events
-
-        :param path: where to store the CyberDEM class files
-        :type path: string, required
-        """
+        """Creates a directory for storing CyberDEM objects and Events"""
 
         if not os.path.isdir(path):
             print(f'Creating new FileSystem path {path}.')
@@ -62,18 +71,30 @@ class FileSystem():
             if os.path.isdir(os.path.join(self.path, folder)):
                 self._folders.append(folder)
 
-
     def save(self, objects, overwrite=False):
         """Save CyberDEM objects and events to the FileSystem as json files
 
-        :param objects: CyberDEM object or event instance (or list of instances)
+        :param objects: CyberDEM object or event instance (or list of
+            instances)
         :type objects: CyberDEM class instance from :py:mod:`base`, or a list
             of objects
         :param overwrite: allow object with the same ID as one already in the
             FileSystem to overwrite the existing file, defaults to False
         :type overwrite: bool, optional
-        :raises Exception: if object is already in FileSystem and overwrite is 
+
+        :raises Exception: if object is already in FileSystem and overwrite is
             set to False
+
+        :Example:
+            >>> from cyberdem.base import Service
+            >>> my_service = Service(
+                    name='httpd', description='Apache web server',\
+                    version='2.4.20', service_type='WebService',\
+                    address='192.168.100.40')
+            >>> fs.save(my_service)
+            >>>
+            $ ls ./test-fs/Service
+            82ca4ed1-a053-4fc1-b1cc-f4b58b4dbf8c.json
         """
 
         if not isinstance(objects, list):
@@ -85,31 +106,55 @@ class FileSystem():
             filepath = os.path.join(self.path, obj._type, obj.id)
 
             if os.path.isfile(filepath+'.json') and not overwrite:
-                raise Exception(f'Object {obj.id} already exists in '
+                raise Exception(
+                    f'Object {obj.id} already exists in '
                     f'{self.path}. Add "overwrite=True" to overwrite.')
 
             serialized = obj._serialize()
-            with open(filepath + '.json', 'w') as outfile: 
+            with open(filepath + '.json', 'w') as outfile:
                 json.dump(serialized, outfile, indent=4)
             outfile.close()
-
 
     def get(self, ids, obj_type=None):
         """Get an object or list of objects by ID
 
-        :param ids: UUIDs to search for
+        :param ids: UUID(s) of object(s) to retrieve
         :type ids: string or list of strings, required
         :param obj_type: CyberDEM type of the id(s). Ex. "Application"
         :type obj_type: string, optional
 
-        :return: instance(s) of the requested object(s) 
-        :rtype: object or list of objects, or ``None`` if no matching IDs are found
+        :return: instance(s) of the requested object(s)
+        :rtype: object or list of objects, or ``None`` if no matching IDs are
+            found
+
+        :Example:
+            >>> my_object = fs.get("82ca4ed1-a053-4fc1-b1cc-f4b58b4dbf8c",\
+                "Application")
+            >>> str(my_object)
+            Application(
+                id: 82ca4ed1-a053-4fc1-b1cc-f4b58b4dbf8c
+            )
+            >>> my_objects = fs.get(["46545b7a-1840-4e34-a26f-aef5eb954b25",\
+                "82ca4ed1-a053-4fc1-b1cc-f4b58b4dbf8c"])
+            >>> for obj in my_obects:
+            ... print(obj)
+            Service(
+                name='httpd',
+                description='Apache web server',
+                version='2.4.20',
+                service_type='WebService',
+                address='192.168.100.40'
+            )
+            Application(
+                id: 82ca4ed1-a053-4fc1-b1cc-f4b58b4dbf8c
+            )
         """
 
         # ensure the obj_type specified is allowed
         if obj_type:
             if obj_type not in self.obj_types:
-                raise Exception(f'obj_type "{obj_type}" is not an allowed '
+                raise Exception(
+                    f'obj_type "{obj_type}" is not an allowed '
                     f'CyberDEM base type. must be in {self.obj_types}"')
             filepath = os.path.join(self.path, obj_type)
         else:
@@ -122,18 +167,18 @@ class FileSystem():
         for i in ids:
             if obj_type:
                 # if the object type was specified the search is quicker
-                if os.path.isfile(os.path.join(filepath, i) +'.json'):
-                    with open(os.path.join(filepath, i) +'.json') as json_file:
-                        obj = json.load(json_file)
-                    json_file.close()
+                if os.path.isfile(os.path.join(filepath, i) + '.json'):
+                    with open(os.path.join(filepath, i) + '.json') as j_file:
+                        obj = json.load(j_file)
+                    j_file.close()
             else:
                 # otherwise, you have to search through the whole directory
                 for root, _, files in os.walk(filepath):
                     if i+'.json' in files:
                         obj_type = os.path.split(root)[1]
-                        with open(os.path.join(root, i) +'.json') as json_file:
-                            obj = json.load(json_file)
-                        json_file.close()
+                        with open(os.path.join(root, i) + '.json') as j_file:
+                            obj = json.load(j_file)
+                        j_file.close()
             found_objects.append(self.obj_types[obj_type](**obj))
         if len(found_objects) == 1:
             return found_objects[0]
@@ -142,35 +187,51 @@ class FileSystem():
         else:
             return found_objects
 
-
     def query(self, query_string):
         """Search the FileSystem for a specific object or objects
 
         :param query_string: SQL formatted query string
         :type query_string: string, required
 
-        :return: attribute names (headers), attribute values of matching objects
-        :rtype: 2-tuple of lists 
+        :return: attribute names (headers), values of matching objects
+        :rtype: 2-tuple of lists
 
         :Example query strings:
-        SELECT attr1,attr2 FROM * WHERE attr3=="test";
-        SELECT id,name,description FROM Device,System WHERE name=='my device';
+            * ``SELECT * FROM *`` (you probably shouldn't do this one...)
+            * ``SELECT attr1,attr2 FROM * WHERE attr3=value``
+            * ``SELECT id,name,description FROM Device,System WHERE name='my \
+                device'``
+            * ``SELECT id FROM * WHERE (name='foo' AND description='bar') OR\
+                 version<>'foobar'``
+
+        :Example:
+            >>> query = "SELECT id FROM * WHERE name='Rapid SCADA'"
+            >>> fs.query(query)
+            (['id'], [('9293510b-534b-4dd0-b7c5-78d92e279400',)])
+            >>> query = "SELECT id,name FROM Application"
+            >>> headers,results = fs.query(query)
+            >>> headers
+            ['id','name']
+            >>> results
+            [('9293510b-534b-4dd0-b7c5-78d92e279400',),\
+            ('46545b7a-1840-4e34-a26f-aef5eb954b25','My application')]
         """
 
         # split the query string into the key components
         if not query_string.upper().startswith("SELECT "):
-            raise Exception(f'query_string must start with "SELECT ". '
-                f'{query_string}')
+            raise Exception(
+                f'query_string must start with "SELECT ". {query_string}')
         if " FROM " not in query_string.upper():
-            raise Exception(f'query_string must contain " FROM " statement. '
-                f'{query_string}')
+            raise Exception(
+                f'query_string must contain "FROM" statement. {query_string}')
         q_select = query_string[7:query_string.find(" FROM ")]
         q_from = query_string[query_string.find(" FROM ")+6:]
         if " WHERE " in query_string.upper():
             q_where = query_string[query_string.find(" WHERE ")+7:]
             q_from = q_from[:q_from.find(" WHERE ")]
-            q_where = q_where.replace('AND','and').replace('OR','or')
-            q_where = q_where.replace('<>','!=').replace('=','==').replace(';','')
+            q_where = q_where.replace('AND', 'and').replace('OR', 'or')
+            q_where = q_where.replace('<>', '!=').replace('=', '==')
+            q_where = q_where.replace(';', '')
         else:
             q_where = None
 
@@ -183,7 +244,8 @@ class FileSystem():
         else:
             for obj_type in q_from.split(','):
                 if obj_type not in self.obj_types:
-                    raise Exception(f'obj_type "{obj_type}" is not an allowed '
+                    raise Exception(
+                        f'obj_type "{obj_type}" is not an allowed '
                         f'CyberDEM base type. must be in {self.obj_types}"')
                 paths.append(os.path.join(self.path, obj_type))
 
@@ -204,12 +266,18 @@ class FileSystem():
             clauses = re.split('and | or', q_where)
             where_attrs = []
             for c in clauses:
-                if '==' in c: operator = '=='
-                elif '!=' in c: operator = '!='
-                elif '<' in c: operator = '<'
-                elif '>' in c: operator = '>'
-                elif '<=' in c: operator = '<='
-                elif '>=' in c: operator = '>='
+                if '==' in c:
+                    operator = '=='
+                elif '!=' in c:
+                    operator = '!='
+                elif '<' in c:
+                    operator = '<'
+                elif '>' in c:
+                    operator = '>'
+                elif '<=' in c:
+                    operator = '<='
+                elif '>=' in c:
+                    operator = '>='
                 else:
                     raise ValueError(f'Unrecognized operator in "{c}"')
                 clause = re.split(operator, c)
@@ -232,10 +300,12 @@ class FileSystem():
                         #   for their values from the current object
                         try:
                             obj_val = obj_dict[attr[0]]
-                            where_check = where_check.replace(''.join(attr), "'"+obj_val+"'"+attr[1])
+                            where_check = where_check.replace(
+                                ''.join(attr), "'"+obj_val+"'"+attr[1])
                         except KeyError:
-                            where_check = where_check.replace(''.join(attr), "'"+attr[0]+"'"+attr[1])
-                    
+                            where_check = where_check.replace(
+                                ''.join(attr), "'"+attr[0]+"'"+attr[1])
+
                     matches = eval(where_check)
                     if not matches:
                         continue
@@ -250,7 +320,6 @@ class FileSystem():
 
         return get_attrs, selected
 
-
     def _create_folder(self, folder_name):
         """Creates a sub-folder in the FileSystem path
 
@@ -263,6 +332,6 @@ class FileSystem():
             os.mkdir(self.path + '/' + folder_name)
             self._folders.append(folder_name)
         else:
-            raise Exception(f'The folder_name "{folder_name}" does not match '
+            raise Exception(
+                f'The folder_name "{folder_name}" does not match '
                 f'the base classes for CyberDEM.')
-        

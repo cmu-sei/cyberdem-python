@@ -1,6 +1,6 @@
-"""Object/Event classes for CyberDEM"""
+"""
+Object/Event classes for CyberDEM
 
-'''
 CyberDEM Python
 
 Copyright 2020 Carnegie Mellon University.
@@ -21,20 +21,19 @@ and unlimited distribution.  Please see Copyright notice for non-US Government
 use and distribution.
 
 DM20-0711
-'''
+"""
 
 
 from collections import OrderedDict
 from datetime import datetime, timedelta
 from cyberdem.enumerations import *
-from cyberdem.structures import *
 import inspect
 import sys
 import uuid
 
 
 class _CyberDEMBase():
-    """Base class for all CyberDEM objects
+    """Superclass for all CyberDEM Objects and Events
 
     Will create an appropriate ``id`` if one is not given.
 
@@ -95,17 +94,22 @@ class _CyberDEMBase():
 
 ## Second level CyberDEM objects
 class _CyberObject(_CyberDEMBase):
-    """Class for all CyberDEM CyberObjects
+    """Superclass for all CyberDEM CyberObjects
 
-    Inherits :_CyberDEMBase:
+    CyberObjects are persistent objects on a network or other cyber
+    infrastructure.
 
-    
+    Inherits :class:`_CyberDEMBase`. Optionally sets the name, description,
+    and/or related_objects parameters for any CyberObject subclass. 
+
     :param name: The name of the object
     :type name: string, optional
     :param description: A description of the object
-    :type description: string
-    :param related_objects: A list of relationship object IDs
-    :type related_objects: list of relationship object IDs, optional
+    :type description: string, optional
+    :param related_objects: A list of :class:`~cyberdem.structures.Relationship` IDs
+    :type related_objects: list, optional
+    :param kwargs: Arguments to pass to the :class:`_CyberDEMBase` class
+    :type kwargs: dictionary, optional
     """
 
     def __init__(self, name=None, description=None, related_objects=None,
@@ -157,25 +161,42 @@ class _CyberObject(_CyberDEMBase):
 
     
 class _CyberEvent(_CyberDEMBase):
-    """Class for all CyberDEM CyberEvents
+    """Superclass for all CyberDEM CyberEvents
+
+    CyberEvents are non-persistent cyber events, as opposed to persistent
+    CyberObjects.
+
+    Inherits :class:`_CyberDEMBase`. Optionally sets the event_time,
+    targets, cyber event phase, duration, actor_ids, and/or source_ids 
+    parameters for any CyberEvent subclass. 
     
-    Attributes
-    ----------
-    event_time : 
-    target :
-    ....
+    :param event_time: Time at which the event started
+    :type event_time: datetime.datetime, optional
+    :param targets: One or more :class:`~cyberdem.structures.TargetStruct`
+        objects identifying the CyberObject(s) targeted in the event
+    :type targets: list, optional
+    :param phase: The cyber event phase of the event
+    :type phase: value from :class:`~cyberdem.enumerations.CyberEventPhaseType`
+        enumeration, optional
+    :param duration: Length of time the event lasted
+    :type duration: datetime.timedelta, optional
+    :param actor_ids: Time ordered list of IDs of the perpetrators involved in
+         this Cyber Event
+    :type actor_ids: list, optional
+    :param source_ids: Time ordered list of IDs of the simulations that this
+         Cyber Event came from.
+    :type source_ids: list, optional
+    :param kwargs: Arguments to pass to the :class:`_CyberDEMBase` class
+    :type kwargs: dictionary, optional
     """
 
-    def __init__(self, event_time=None, target_ids=None, target_modifiers=None,
-            phase=None, duration=None, actor_ids=None, source_ids=None,
-            **kwargs):
+    def __init__(self, event_time=None, targets=None, phase=None,
+            duration=None, actor_ids=None, source_ids=None, **kwargs):
         super().__init__(**kwargs)
         if event_time:
             self.event_time = event_time
-        if target_ids:
-            self.target_ids = target_ids
-        if target_modifiers:
-            self.target_modifiers = target_modifiers
+        if targets:
+            self.targets = targets
         if phase:
             self.phase = phase
         if duration:
@@ -198,28 +219,23 @@ class _CyberEvent(_CyberDEMBase):
         self._event_time = value
 
     @property
-    def target_ids(self):
+    def targets(self):
         return self._target_ids
 
-    @target_ids.setter
-    def target_ids(self, value):
+    @targets.setter
+    def targets(self, value):
         if not isinstance(value, list):
             raise TypeError(
-                f'{type(value)} is not a valid type for target_ids. Must be '
-                f'list.')
+                f'{type(value)} is not a valid type for targets. Must be '
+                f'list of TargetStruct IDs.')
+        for v in value:
+            try:
+                uuid.UUID(value.replace('target-struct--',''))
+            except ValueError:
+                raise ValueError(
+                    f'"{value}" is not a valid value in targets. Must be a '
+                    f'targetStruct ID.')
         self._target_ids = value
-
-    @property
-    def target_modifiers(self):
-        return self._target_modifiers
-
-    @target_modifiers.setter
-    def target_modifiers(self, value):
-        if not isinstance(value, dict):
-            raise TypeError(
-                f'{type(value)} is not a valid type for target_modifiers. Must'
-                f'be dictionary.')
-        self._target_modifiers = value
 
     @property
     def phase(self):
@@ -269,25 +285,44 @@ class _CyberEvent(_CyberDEMBase):
 
 ### Third level CyberDEM CyberEvents
 class _CyberEffect(_CyberEvent):
-    """Class for all CyberDEM CyberEffects"""
+    """Passive superclass for all CyberDEM CyberEffects.
+    
+    Inherits :class:`_CyberEvent`. Included for completeness of the CyberDEM
+    standard.
+    """
     
     pass
 
 
 class _CyberAction(_CyberEvent):
-    """Class for all CyberDEM CyberActions"""
+    """Passive superclass for all CyberDEM CyberActions.
+    
+    Inherits :class:`_CyberEvent`. Included for completeness of the CyberDEM
+    standard.
+    """
 
     pass
 
 
 ### Third level CyberDEM CyberObjects
 class Application(_CyberObject):
-    """Class for Application object
+    """Representation of an Application object.
 
-    Attributes
-    ----------
-    version : string
-        Version of the application
+    Inherits :class:`_CyberObject`.
+
+    :param version: Version of the application.
+    :type version: string, optional
+    :param kwargs: Arguments to pass to the :class:`_CyberObject` class
+    :type kwargs: dictionary, optional
+
+    :Example:
+        >>> from cyberdem.base import Application
+        >>> kwargs = {
+        ...    'version': '2.4.2',
+        ...    'name': 'PfSense',
+        ...    'description': 'PfSense Firewall'
+        ...    }
+        >>> my_app = Application(**kwargs)
     """
 
     _type = "Application"
@@ -311,20 +346,37 @@ class Application(_CyberObject):
 
 
 class Data(_CyberObject):
-    """Class for Data object
+    """Representation of a Data object
 
-    Attributes
-    ----------
-    sensitivity : SensitivityType
-        Sensitivity level of the data, from the enumerated list of 
-            SensitivityType
-    data_type : DataType
+    Inherits :class:`_CyberObject`.
 
-    encrypted : EncryptionType
+    :param sensitivity: [desc]
+    :type sensitivity: value from 
+        :class:`~cyberdem.enumerations.SensitivityType` enumeration, optional 
+    :param data_type: [desc]
+    :type data_type: value from 
+        :class:`~cyberdem.enumerations.DataType` enumeration, optional
+    :param encrypted: [desc]
+    :type encrypted: value from 
+        :class:`~cyberdem.enumerations.EncryptionType` enumeration, optional
+    :param status: [desc]
+    :type status: value from 
+        :class:`~cyberdem.enumerations.DataStatus` enumeration, optional
+    :param confidentiality: [desc]
+    :type confidentiality: float, optional
+    :param kwargs: Arguments to pass to the :class:`_CyberObject` class
+    :type kwargs: dictionary, optional
 
-    status : DataStatus
-
-    confidetiality : float
+    :Example:
+        >>> from cyberdem.base import Data
+        >>> kwargs = {
+        ...    'sensitivity': 'FOUO',
+        ...    'data_type': 'File',
+        ...    'confidentiality': 0.6,
+        ...    'name': 'Foo File',
+        ...    'description': 'Foobarred file'
+        ...    }
+        >>> my_data = Data(**kwargs)
     """
 
     _type = "Data"
@@ -387,11 +439,36 @@ class Data(_CyberObject):
 
 
 class Device(_CyberObject):
-    """Class for Device object
+    """Representation of a Device object.
 
-    Attributes
-    ----------
+    Inherits :class:`_CyberObject`.
 
+    :param device_types: Type of device (ex. "Sensor", "Printer")
+    :type device_types: value from the 
+        :class:`~cyberdem.enumerations.DeviceType` enumeration, optional
+    :param is_virtual: whether the device is a virtual device
+    :type is_virtual: boolean, optional
+    :param role: [desc]
+    :type role: string, optional
+    :param device_identifier: [desc]
+    :type device_identifier: string, optional
+    :param network_interfaces: mapping of interface names to addresses
+    :type network_interfaces: list of tuples, optional
+    :param kwargs: Arguments to pass to the :class:`_CyberObject` class
+    :type kwargs: dictionary, optional
+    
+    :Example:
+        >>> from cyberdem.base import Device
+        >>> kwargs = {
+        ...    'device_type': 'Generic',
+        ...    'is_virtual': False,
+        ...    'device_identifier':\
+            '(01)12345678987654(55)120717(55)A12345B(55)4321',
+        ...    'name': 'The Server',
+        ...    'description': 'Generic server description'
+        ...    }
+        >>> net_ints = [('eth0','204.105.24.23'), ('eth1','192.168.10.101')]
+        >>> my_device = Device(network_interfaces=net_ints, **kwargs)
     """
 
     _type = "Device"
@@ -451,8 +528,8 @@ class Device(_CyberObject):
     def device_identifier(self, value):
         if not isinstance(value, str):
             raise TypeError(
-                f'{type(value)} is not a valid type for device_identifier. Must be '
-                f'string.')
+                f'{type(value)} is not a valid type for device_identifier. '
+                f'Must be string.')
         self._device_identifier = value
 
     @property

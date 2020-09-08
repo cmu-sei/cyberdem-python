@@ -1,6 +1,6 @@
-"""CyberDEM Enumerations Module"""
-
 '''
+CyberDEM Enumerations Module
+
 CyberDEM Python
 
 Copyright 2020 Carnegie Mellon University.
@@ -32,13 +32,14 @@ class _CyberDEMEnumeration():
     def _check_prop(self, value):
         """Checks to see if ``value`` is an allowed enumeration value.
 
-        Campares the given value to to the allowed options for the current
-        enumeration class (sub-class to _CyberDEMEnumeration).
+        Campares the given value to the allowed options for the current
+        enumeration subclass.
 
         :param value: user-provided value for the enumeration type
         :type value: required
 
-        :raises ValueError: if the ``value`` is not in the allowed options.
+        :raises ValueError: if the ``value`` is not in the allowed options of
+            the enumeration class.
         """
 
         if value.lower() not in [o.lower() for o in self._opts]:
@@ -142,10 +143,10 @@ class DeviceType(_CyberDEMEnumeration):
     def _check_prop(self, value):
         """Checks to see if ``value`` is an allowed enumeration value.
 
-        Overrides the :func:`_CyberDEMEnumeration._check_prop` function from
+        Overrides the :func:`~_CyberDEMEnumeration._check_prop` function from
         the super :class:`_CyberDEMEnumeration`
 
-        Campares the given value to to the allowed options for the current
+        Campares the given value to the allowed options for the current
         enumeration class (sub-class to :class:`_CyberDEMEnumeration`).
 
         :param value: user-provided value for the enumeration type

@@ -1,6 +1,6 @@
-"""CyberDEM Example Script"""
-
 '''
+CyberDEM Example Script
+
 CyberDEM Python
 
 Copyright 2020 Carnegie Mellon University.
@@ -27,6 +27,7 @@ DM20-0711
 from cyberdem.filesystem import FileSystem
 from cyberdem.base import *
 from datetime import datetime, timedelta
+
 
 def main():
 
