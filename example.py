@@ -26,6 +26,7 @@ DM20-0711
 
 from cyberdem.filesystem import FileSystem
 from cyberdem.base import *
+from cyberdem.structures import Relationship
 from datetime import datetime, timedelta
 
 

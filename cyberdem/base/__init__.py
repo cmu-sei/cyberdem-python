@@ -172,9 +172,11 @@ class _CyberEvent(_CyberDEMBase):
     
     :param event_time: Time at which the event started
     :type event_time: datetime.datetime, optional
-    :param targets: One or more :class:`~cyberdem.structures.TargetStruct`
-        objects identifying the CyberObject(s) targeted in the event
+    :param targets: One or IDs identifying the CyberObject(s) targeted in the
+        event
     :type targets: list, optional
+    :param target_modifiers: mapping of target characteristics to values
+    :type target_modifiers: dictionary, optional
     :param phase: The cyber event phase of the event
     :type phase: value from :class:`~cyberdem.enumerations.CyberEventPhaseType`
         enumeration, optional
@@ -190,13 +192,16 @@ class _CyberEvent(_CyberDEMBase):
     :type kwargs: dictionary, optional
     """
 
-    def __init__(self, event_time=None, targets=None, phase=None,
-            duration=None, actor_ids=None, source_ids=None, **kwargs):
+    def __init__(self, event_time=None, targets=None, target_modifiers=None,
+            phase=None, duration=None, actor_ids=None, source_ids=None,
+            **kwargs):
         super().__init__(**kwargs)
         if event_time:
             self.event_time = event_time
         if targets:
             self.targets = targets
+        if target_modifiers:
+            self.target_modifiers = target_modifiers
         if phase:
             self.phase = phase
         if duration:
@@ -220,22 +225,33 @@ class _CyberEvent(_CyberDEMBase):
 
     @property
     def targets(self):
-        return self._target_ids
+        return self._targets
 
     @targets.setter
     def targets(self, value):
         if not isinstance(value, list):
             raise TypeError(
-                f'{type(value)} is not a valid type for targets. Must be '
-                f'list of TargetStruct IDs.')
+                f'{type(value)} is not a valid type for targets. Must be a '
+                f'list of IDs.')
         for v in value:
             try:
-                uuid.UUID(value.replace('target-struct--',''))
+                uuid.UUID(v)
             except ValueError:
                 raise ValueError(
-                    f'"{value}" is not a valid value in targets. Must be a '
-                    f'targetStruct ID.')
-        self._target_ids = value
+                    f'"{v}" is not a valid value in targets. Must be an ID.')
+        self._targets = value
+
+    @property
+    def target_modifiers(self):
+        return self._target_modifiers
+    
+    @targets.setter
+    def targets(self, value):
+        if not isinstance(value, dict):
+            raise TypeError(
+                f'{type(value)} is not a valid type for target_modifiers. Must'
+                f' be a dictionary')
+        self._target_modifiers = value
 
     @property
     def phase(self):
@@ -287,8 +303,7 @@ class _CyberEvent(_CyberDEMBase):
 class _CyberEffect(_CyberEvent):
     """Passive superclass for all CyberDEM CyberEffects.
     
-    Inherits :class:`_CyberEvent`. Included for completeness of the CyberDEM
-    standard.
+    Inherits :class:`_CyberEvent`. No additional attributes.
     """
     
     pass
@@ -552,11 +567,28 @@ class Device(_CyberObject):
 
 
 class Network(_CyberObject):
-    """Class for Network object
-    
-    Attributes
-    ----------
+    """Representation of a Network object.
 
+    Inherits :class:`_CyberObject`.
+
+    :param protocol: protocol used on the network
+    :type protocol: value from the 
+        :class:`~cyberdem.enumerations.NetworkProtocolType` enumeration,
+        optional
+    :param mask: network mask
+    :type mask: string, optional
+    :param kwargs: Arguments to pass to the :class:`_CyberObject` class
+    :type kwargs: dictionary, optional
+    
+    :Example:
+        >>> from cyberdem.base import Network
+        >>> kwargs = {
+        ...    'protocol': 'OSPF',
+        ...    'mask': '255.255.255.0',
+        ...    'name': 'Network 10',
+        ...    'description': 'User network'
+        ... }
+        >>> my_network = Network(**kwargs)
     """
 
     _type = "Network"
@@ -589,7 +621,43 @@ class Network(_CyberObject):
 
 
 class NetworkLink(_CyberObject):
-    """Class for NetworkLink object"""
+    """Representation of a NetworkLink object.
+
+    Inherits :class:`_CyberObject`.
+
+    :param is_logical: the link is logical (rather than physical)
+    :type is_logical: boolean, optional
+    :param physical_layer: what type is the physical layer
+    :type physical_layer: value from the 
+        :class:`~cyberdem.enumerations.PhysicalLayerType` enumeration, optional
+    :param data_link_protocol: data link protocol
+    :type data_link_protocol: value from the 
+        :class:`~cyberdem.enumerations.DataLinkProtocolType` enumeration,
+        optional
+    :param bandwidth: Max data transfer rate of the link in Gb
+    :type bandwidth: integer, optional
+    :param latency: network link latency in milliseconds
+    :type latency: integer, optional
+    :param jitter: variability in the latency, measured in milliseconds
+    :type jitter: integer, optional
+    :param network_interfaces: mapping of interface names to addresses
+    :type network_interfaces: list of tuples, optional
+    :param kwargs: Arguments to pass to the :class:`_CyberObject` class
+    :type kwargs: dictionary, optional
+    
+    :Example:
+        >>> from cyberdem.base import NetworkLink
+        >>> kwargs = {
+        ...    'is_logical': False,
+        ...    'physical_layer': 'Wired',
+        ...    'data_link_protocol': 'Ethernet',
+        ...    'bandwidth': 5,
+        ...    'name': 'Link 10',
+        ...    'description': 'User network link'
+        ... }
+        >>> net_ints = [('eth1','192.168.10.100'), ('eth0','192.168.10.101')]
+        >>> my_link = NetworkLink(network_interfaces=net_ints, **kwargs)
+    """
 
     _type = "NetworkLink"
 
@@ -698,18 +766,41 @@ class NetworkLink(_CyberObject):
 
 
 class Persona(_CyberObject):
-    """Class for Persona object"""
+    """Representation of a Personna object.
+
+    Inherits :class:`_CyberObject`. No additional attributes.
+
+    :Example:
+        >>> from cyberdem.base import Persona
+        >>> kwargs = {
+        ...    'name': 'Attacker 1',
+        ...    'description': 'nation-state actor'
+        ... }
+        >>> attacker_1 = Persona(**kwargs)
+    """
 
     _type = "Persona"
 
 
 class System(_CyberObject):
-    """Class for System object
+    """Representation of a System object.
+
+    Inherits :class:`_CyberObject`.
     
-    Attributes
-    ----------
-    system_type : SystemType
-        From the enumerated list of SystemType
+    :param system_type: Type of system
+    :type system_type: value from the 
+        :class:`~cyberdem.enumerations.SystemType` enumeration, optional
+    :param kwargs: Arguments to pass to the :class:`_CyberObject` class
+    :type kwargs: dictionary, optional
+
+    :Example:
+        >>> from cyberdem.base import System
+        >>> kwargs = {
+        ...    'system_type': 'SCADA',
+        ...    'name': 'MTU',
+        ...    'description': 'Network 1 MTU'
+        ... }
+        >>> my_system = System(**kwargs)
     """
 
     _type = "System"
@@ -731,12 +822,25 @@ class System(_CyberObject):
 
 #### Fourth level CyberDEM CyberObjects
 class OperatingSystem(_CyberObject):
-    """Class for OperatingSystem object 
+    """Representation of a OperatingSystem object.
 
-    Attributes
-    ----------
-    os_type : OperatingSystemType
-        From the enumerated list of OperatingSystemType
+    Inherits :class:`_CyberObject`.
+    
+    :param os_type: Type of operating system
+    :type os_type: value from the 
+        :class:`~cyberdem.enumerations.OperatingSystemType` enumeration,
+        optional
+    :param kwargs: Arguments to pass to the :class:`_CyberObject` class
+    :type kwargs: dictionary, optional
+
+    :Example:
+        >>> from cyberdem.base import OperatingSystem
+        >>> kwargs = {
+        ...    'os_type': 'MicrosoftWindows',
+        ...    'name': 'User machine',
+        ...    'description': 'For employees in foo department'
+        ... }
+        >>> my_os = OperatingSystem(**kwargs)
     """
 
     _type = "OperatingSystem"
@@ -757,14 +861,27 @@ class OperatingSystem(_CyberObject):
 
 
 class Service(Application):
-    """Class for Service object 
+    """Representation of a Service object.
 
-    Attributes
-    ----------
-    service_type : ServiceType
-        From the enumerated list of ServiceType
-    address : string
-        ??
+    Inherits :class:`Application`.
+    
+    :param service_type: Type of service
+    :type os_type: value from the 
+        :class:`~cyberdem.enumerations.ServiceType` enumeration, optional
+    :param address:
+    :type address: string, optional
+    :param kwargs: Arguments to pass to the :class:`Application` class
+    :type kwargs: dictionary, optional
+
+    :Example:
+        >>> from cyberdem.base import Service
+        >>> kwargs = {
+        ...    'service_type': 'EmailServer',
+        ...    'version': '15.2.595.4',
+        ...    'name': 'Mail Server 1',
+        ...    'description': 'external exchange server'
+        ... }
+        >>> my_service = Service(**kwargs)
     """
 
     _type = "Service"
@@ -800,34 +917,70 @@ class Service(Application):
 
 #### Fourth level CyberDEM CyberEvents
 class CyberAttack(_CyberAction):
-    """Class for CyberAttack object 
+    """Representation of a CyberAttack object.
 
-    Attributes
-    ----------
-    none
+    Inherits :class:`_CyberAction`. No additional attributes.
+
+    :Example:
+        >>> from cyberdem.base import CyberAttack
+        >>> from datetime import datetime, timedelta
+        >>> kwargs = {
+        ...    'event_time': datetime.today(),
+        ...    'targets': [the_target.id],
+        ...    'target_modifiers': {"characteristic":"value"},
+        ...    'phase': 'Continue',
+        ...    'duration': timedelta(seconds=10),
+        ...    'actor_ids': [attacker_1.id]
+        ... }
+        >>> generic_attack = CyberAttack(**kwargs)
     """
 
     _type = "CyberAttack"
 
     
 class CyberDefend(_CyberAction):
-    """Class for CyberDefend object 
+    """Representation of a CyberDefend object.
 
-    Attributes
-    ----------
-    none
+    Inherits :class:`_CyberAction`. No additional attributes.
+
+    :Example:
+        >>> from cyberdem.base import CyberDefend
+        >>> from datetime import datetime, timedelta
+        >>> kwargs = {
+        ...    'event_time': datetime.today(),
+        ...    'targets': [the_target.id],
+        ...    'target_modifiers': {"characteristic":"value"},
+        ...    'phase': 'Start',
+        ...    'source_ids': ["77545b7d-3900-4e34-a26f-eec5eb954d33"]
+        ... }
+        >>> generic_defend = CyberDefend(**kwargs)
     """
 
     _type = "CyberDefend"
 
     
 class CyberRecon(_CyberAction):
-    """Class for CyberRecon object 
+    """Representation of a CyberRecon object.
 
-    Attributes
-    ----------
-    recon_type : ReconType
-        From the enumerated list of ReconType
+    Inherits :class:`_CyberAction`. 
+
+    :param recon_type: Type of reconnaissance
+    :type recon_type: value from the :class:`~cyberdem.enumerations.ReconType`
+         enumeration, optional
+    :param kwargs: Arguments to pass to the :class:`_CyberAction` class
+    :type kwargs: dictionary, optional
+
+    :Example:
+        >>> from cyberdem.base import CyberDefend
+        >>> from datetime import datetime, timedelta
+        >>> kwargs = {
+        ...    'recon_type': 'NetworkMap',
+        ...    'event_time': datetime.today(),
+        ...    'targets': [the_target.id],
+        ...    'phase': 'Start',
+        ...    'source_ids': ["77545b7d-3900-4e34-a26f-eec5eb954d33"]
+        ... }
+        >>> recon_event = CyberRecon(**kwargs)
     """
 
     _type = "CyberRecon"
@@ -848,23 +1001,56 @@ class CyberRecon(_CyberAction):
 
 
 class Deny(_CyberEffect):
-    """Class for Deny object 
+    """
+    To prevent access to, operation of, or availability of a target function by
+    a specified level for a specified time, by degrade, disrupt, or destroy
+    (JP3-12)
 
-    Attributes
-    ----------
-    none
+    Inherits :class:`_CyberEffect`. No additional attributes.
+
+    :param kwargs: Arguments to pass to the :class:`_CyberEffect` class
+    :type kwargs: dictionary, optional
+
+    :Example:
+        >>> from cyberdem.base import Deny
+        >>> from datetime import datetime, timedelta
+        >>> kwargs = {
+        ...    'event_time': datetime.today(),
+        ...    'targets': [the_target.id],
+        ...    'phase': 'Start',
+        ...    'duration': timedelta(seconds=5)
+        ...    'actor_ids': ["77545b7d-3900-4e34-a26f-eec5eb954d33"]
+        ... }
+        >>> deny_effect = Deny(**kwargs)
     """
 
     _type = "Deny"
 
 
 class Detect(_CyberEffect):
-    """Class for Detect object 
+    """
+    To discover or discern the existence, presence, or fact of an intrusion
+    into information systems.
+    
+    Inherits :class:`_CyberEffect`.
 
-    Attributes
-    ----------
-    acquired_information : dict
-        ??
+    :param acquired_information: information obtained during detection
+    :type acquired_information: dictionary, optional
+    :param kwargs: Arguments to pass to the :class:`_CyberEffect` class
+    :type kwargs: dictionary, optional
+
+    :Example:
+        >>> from cyberdem.base import Detect
+        >>> from datetime import datetime, timedelta
+        >>> info = {'siem log': 'file permission change on user-ws-2'}
+        >>> kwargs = {
+        ...    'acquired_information': info,
+        ...    'event_time': datetime.today(),
+        ...    'targets': [the_target.id],
+        ...    'duration': timedelta(seconds=5)
+        ...    'actor_ids': ["77545b7d-3900-4e34-a26f-eec5eb954d33"]
+        ... }
+        >>> detect_effect = Detect(**kwargs)
     """
 
     _type = "Detect"
@@ -882,18 +1068,36 @@ class Detect(_CyberEffect):
     def acquired_information(self, value):
         if not isinstance(value, dict):
             raise TypeError(
-                f'{type(value)} is not a valid type for acquired_information. Must be '
-                f'dict.')
+                f'{type(value)} is not a valid type for acquired_information. '
+                f'Must be dict.')
         self._acquired_information = value
     
 
 class Manipulate(_CyberEffect):
-    """Class for Manipulate object 
+    """
+    The effect of controlling or changing information, information systems,
+    and/or networks to create physical denial effects, using deception,
+    decoying, conditioning, spoofing, falsification, and other similar
+    techniques.
 
-    Attributes
-    ----------
-    description : string
-        ?? desc ??
+    Inherits :class:`_CyberEffect`.
+
+    :param description: information obtained during detection
+    :type description: string, optional
+    :param kwargs: Arguments to pass to the :class:`_CyberEffect` class
+    :type kwargs: dictionary, optional
+
+    :Example:
+        >>> from cyberdem.base import Manipulate
+        >>> from datetime import datetime, timedelta
+        >>> kwargs = {
+        ...    'description': "ransomware encrypted drives",
+        ...    'event_time': datetime.today(),
+        ...    'targets': [the_target.id],
+        ...    'duration': timedelta(hours=5)
+        ...    'actor_ids': ["77545b7d-3900-4e34-a26f-eec5eb954d33"]
+        ... }
+        >>> manipulate_effect = Manipulate(**kwargs)
     """
 
     _type = "Manipulate"
@@ -918,47 +1122,111 @@ class Manipulate(_CyberEffect):
     
 #### Fifth level CyberDEM CyberEvents
 class DataExfiltration(CyberAttack):
-    """Class for DataExfiltration object 
+    """
+    Data exfiltration is the unauthorized copying, transfer or retrieval of
+    data from a computer or server. Data exfiltration is a malicious activity
+    performed through various different techniques, typically by cybercriminals
+    over the Internet or other network. 
 
-    Attributes
-    ----------
-    none
+    Inherits :class:`CyberAttack`. No additional attributes.
+
+    :param kwargs: Arguments to pass to the :class:`CyberAttack` class
+    :type kwargs: dictionary, optional
+
+    :Example:
+        >>> from cyberdem.base import DataExfiltration
+        >>> from datetime import datetime, timedelta
+        >>> kwargs = {
+        ...    'event_time': datetime.today(),
+        ...    'phase': 'End',
+        ...    'targets': [the_target.id],
+        ...    'duration': timedelta(hours=5)
+        ...    'actor_ids': ["77545b7d-3900-4e34-a26f-eec5eb954d33"]
+        ... }
+        >>> exfil = DataExfiltration(**kwargs)
     """
 
     _type = "DataExfiltration"
 
 
 class Destroy(Deny):
-    """Class for Destroy object 
+    """
+    To completely and irreparably deny access to, or operation of, a target.
 
-    Attributes
-    ----------
-    none
+    Inherits :class:`Deny`. No additional attributes.
+
+    :param kwargs: Arguments to pass to the :class:`Deny` class
+    :type kwargs: dictionary, optional
+
+    :Example:
+        >>> from cyberdem.base import Destroy
+        >>> from datetime import datetime, timedelta
+        >>> kwargs = {
+        ...    'event_time': datetime.today(),
+        ...    'targets': [the_target.id],
+        ...    'phase': 'Start',
+        ...    'duration': timedelta(seconds=5)
+        ...    'actor_ids': ["77545b7d-3900-4e34-a26f-eec5eb954d33"]
+        ... }
+        >>> destroy_effect = Destroy(**kwargs)
     """
 
     _type = "Destroy"
 
 
 class Degrade(Deny):
-    """Class for Degrade object 
+    """
+    To deny access to, or operation of, a target to a level represented as a
+    percentage of capacity
 
-    Attributes
-    ----------
-    none
+    Inherits :class:`Deny`. No additional attributes.
+
+    :param kwargs: Arguments to pass to the :class:`Deny` class
+    :type kwargs: dictionary, optional
+
+    :Example:
+        >>> from cyberdem.base import Degrade
+        >>> from datetime import datetime, timedelta
+        >>> kwargs = {
+        ...    'event_time': datetime.today(),
+        ...    'targets': [the_target.id],
+        ...    'phase': 'Start',
+        ...    'duration': timedelta(seconds=5)
+        ...    'actor_ids': ["77545b7d-3900-4e34-a26f-eec5eb954d33"]
+        ... }
+        >>> degrade_effect = Degrade(**kwargs)
     """
 
     _type = "Degrade"
 
 
 class Disrupt(Deny):
-    """Class for Disrupt object 
+    """
+    To completely but temporarily deny access to, or operation of, a target for
+    a period of time.
 
-    Attributes
-    ----------
-    is_random : boolean
-        ?? desc ??
-    percentage : float
-        ?? desc ??
+    Inherits :class:`Deny`.
+
+    :param is_random: whether or not the disruption is uniform or random
+    :type is_random: boolean, optional
+    :param percentage: Percentage of bits to drop between 0.0 and 100.0
+    :type percentage: float, optional
+    :param kwargs: Arguments to pass to the :class:`Deny` class
+    :type kwargs: dictionary, optional
+
+    :Example:
+        >>> from cyberdem.base import Disrupt
+        >>> from datetime import datetime, timedelta
+        >>> kwargs = {
+        ...    'is_random': False,
+        ...    'percentage': .7,
+        ...    'event_time': datetime.today(),
+        ...    'targets': [the_target.id],
+        ...    'phase': 'Start',
+        ...    'duration': timedelta(seconds=5)
+        ...    'actor_ids': ["77545b7d-3900-4e34-a26f-eec5eb954d33"]
+        ... }
+        >>> disrupt_effect = Disrupt(**kwargs)
     """
 
     _type = "Disrupt"
@@ -996,14 +1264,35 @@ class Disrupt(Deny):
 
 
 class PacketManipulationEffect(Manipulate):
-    """Class for PacketManipulationEffect object 
+    """
+    Packet manipulation cyber effect:  duplication, corruption, reordering,
+    drop.
 
-    Attributes
-    ----------
-    manipulation_type : PacketManipulationType
-        ?? desc ??
-    percentage : float
-        ?? desc ??
+    Inherits :class:`Manipulate`.
+
+    :param manipulation_type: type of manipulation
+    :type manipulation_type: value from 
+        :class:`~cyberdem.enumerations.PacketManipulationType` enumeration,
+        optional
+    :param percentage: Percentage of packets to affect between 0.0 and 100.0
+    :type percentage: float, optional
+    :param kwargs: Arguments to pass to the :class:`Manipulate` class
+    :type kwargs: dictionary, optional
+
+    :Example:
+        >>> from cyberdem.base import PacketManipulationEffect
+        >>> from datetime import datetime, timedelta
+        >>> kwargs = {
+        ...    'manipulation_type': 'Dropped',
+        ...    'percentage': 1,
+        ...    'description': "dropping packets",
+        ...    'event_time': datetime.today(),
+        ...    'targets': [the_target.id],
+        ...    'duration': timedelta(hours=5)
+        ...    'actor_ids': ["77545b7d-3900-4e34-a26f-eec5eb954d33"]
+        ... }
+        >>> packet_effect = PacketManipulationEffect(**kwargs)
+
     """
 
     _type = "PacketManipulationEffect"
@@ -1038,15 +1327,32 @@ class PacketManipulationEffect(Manipulate):
 
 
 class ManipulationAttack(CyberAttack):
-    """Class for ManipulationAttack object 
+    """
+    Controls or changes information, information systems, and/or networks to
+    create physical denial effects, using deception, decoying, conditioning,
+    spoofing, falsification, and other similar techniques 
+    
+    Inherits :class:`CyberAttack`.
+    
+    :param description: Describes the "what and how" of the manipulation attack
+    :type description: string, optional
+    :param attack_content: could contain the details of the manipulation attack
+        itself OR the manipulated message after the attack
+    :type attack_content: string, optional
+    :param kwargs: Arguments to pass to the :class:`CyberAttack` class
+    :type kwargs: dictionary, optional
 
-    Attributes
-    ----------
-    description : string
-        Describes the "what and how" of the manipulation attack
-    attack_content : string
-        Could contain the details of the manipulation attack itself OR the 
-            manipulated message after the attack
+    :Example:
+        >>> from cyberdem.base import DataExfiltration
+        >>> from datetime import datetime, timedelta
+        >>> kwargs = {
+        ...    'event_time': datetime.today(),
+        ...    'phase': 'End',
+        ...    'targets': [the_target.id],
+        ...    'duration': timedelta(hours=5)
+        ...    'actor_ids': ["77545b7d-3900-4e34-a26f-eec5eb954d33"]
+        ... }
+        >>> exfil = DataExfiltration(**kwargs)
     """
 
     _type = "ManipulationAttack"
