@@ -1333,7 +1333,7 @@ class ManipulationAttack(CyberAttack):
     spoofing, falsification, and other similar techniques 
     
     Inherits :class:`CyberAttack`.
-    
+
     :param description: Describes the "what and how" of the manipulation attack
     :type description: string, optional
     :param attack_content: could contain the details of the manipulation attack
@@ -1390,16 +1390,33 @@ class ManipulationAttack(CyberAttack):
 
 
 class PhishingAttack(CyberAttack):
-    """Class for PhishingAttack object 
+    """
+    The fraudulent practice of sending messages purporting to be from reputable
+    sources in order to induce individuals to reveal sensitive information or
+    unknowingly initiate another attack.
 
-    Attributes
-    ----------
-    type : MessageType
-        From the MessageType enumeration
-    header : string
-        Header of the message
-    body : string
-        Message body
+    Inherits :class:`CyberAttack`.
+    
+    :param message_type: type of message. Ex. "Email"
+    :type message_type: value from the 
+        :class:`~cyberdem.enumerations.MessageType` enumeration, optional
+    :param header: Originator, From, To, Subject, Reply To
+    :type header: string, optional
+    :param kwargs: Arguments to pass to the :class:`CyberAttack` class
+    :type kwargs: dictionary, optional
+
+    :Example:
+        >>> from cyberdem.base import PhishingAttack
+        >>> from datetime import datetime
+        >>> kwargs = {
+        ...    'message_type': 'Email',
+        ...    'header': 'From: Your Name <yourname@foo.bar>, To: My Name \
+            <myname@bar.foo>, Subject: foo the bar',
+        ...    'event_time': datetime.today(),
+        ...    'targets': [the_target.id],
+        ...    'actor_ids': ["77545b7d-3900-4e34-a26f-eec5eb954d33"]
+        ... }
+        >>> phish = PhishingAttack(**kwargs)
     """
 
     _type = "PhishingAttack"
@@ -1449,23 +1466,57 @@ class PhishingAttack(CyberAttack):
 
 ###### Sixth level CyberDEM CyberEvents --> CyberEffects
 class BlockTrafficEffect(Disrupt):
-    """Class for BlockTrafficEffect object 
+    """
+    Completely block all traffic over a communication channel.
 
-    Attributes
-    ----------
-    none
+    Inherits :class:`Disrupt`. No additional attributes.
+
+    :param kwargs: Arguments to pass to the :class:`Disrupt` class
+    :type kwargs: dictionary, optional
+
+    :Example:
+        >>> from cyberdem.base import BlockTrafficEffect
+        >>> from datetime import datetime, timedelta
+        >>> kwargs = {
+        ...    'is_random': False,
+        ...    'percentage': .7,
+        ...    'event_time': datetime.today(),
+        ...    'targets': [the_target.id],
+        ...    'phase': 'Continue',
+        ...    'duration': timedelta(seconds=5)
+        ...    'actor_ids': ["77545b7d-3900-4e34-a26f-eec5eb954d33"]
+        ... }
+        >>> blocktraffic_effect = BlockTrafficEffect(**kwargs)
     """
 
     _type = "BlockTrafficEffect"
 
 
 class HardwareDamageEffect(Destroy):
-    """Class for HardwareDamageEffect object 
+    """
+    Physical damage to a device.
 
-    Attributes
-    ----------
-    damage_type : HardwareDamageType
-        From the HardwareDamageType enumeration
+    Inherits :class:`Destroy`.
+
+    :param damage_type: type of damage
+    :type damage_type: value from the
+        :class:`~cyberdem.enumerations.HardwareDamageType` enumeration,
+        optional
+    :param kwargs: Arguments to pass to the :class:`Destroy` class
+    :type kwargs: dictionary, optional
+
+    :Example:
+        >>> from cyberdem.base import HardwareDamageEffect
+        >>> from datetime import datetime, timedelta
+        >>> kwargs = {
+        ...    'damage_type': 'PhysicalDestruction',
+        ...    'event_time': datetime.today(),
+        ...    'targets': [the_target.id],
+        ...    'phase': 'Start',
+        ...    'duration': timedelta(days=5)
+        ...    'actor_ids': ["77545b7d-3900-4e34-a26f-eec5eb954d33"]
+        ... }
+        >>> hwdamage_effect = HardwareDamageEffect(**kwargs)
     """
 
     _type = "HardwareDamageEffect"
@@ -1486,14 +1537,33 @@ class HardwareDamageEffect(Destroy):
 
 
 class LoadRateEffect(Degrade):
-    """Class for LoadRateEffect object 
+    """
+    Impact on data upload or download rate.
 
-    Attributes
-    ----------
-    percentage : float
-        ?? desc ??
-    rate_type : LoadRateType
-        From the LoadRateType enumeration
+    Inherits :class:`Degrade`.
+
+    :param percentage: Percentage of maximum achievable rate between 0.0 and
+        100.0
+    :type percentage: float, optional
+    :param rate_type: value from the 
+        :class:`~cyberdem.enumerations.LoadRateType` enumeration
+    :type rate_type: string, optional
+    :param kwargs: Arguments to pass to the :class:`Degrade` class
+    :type kwargs: dictionary, optional
+
+    :Example:
+        >>> from cyberdem.base import LoadRateEffect
+        >>> from datetime import datetime, timedelta
+        >>> kwargs = {
+        ...    'percentage': 22.5,
+        ...    'rate_type': 'Upload',
+        ...    'event_time': datetime.today(),
+        ...    'targets': [the_target.id],
+        ...    'phase': 'Start',
+        ...    'duration': timedelta(seconds=5)
+        ...    'actor_ids': ["77545b7d-3900-4e34-a26f-eec5eb954d33"]
+        ... }
+        >>> loadrate_effect = LoadRateEffect(**kwargs)
     """
 
     _type = "LoadRateEffect"
@@ -1528,12 +1598,27 @@ class LoadRateEffect(Degrade):
 
 
 class DelayEffect(Degrade):
-    """Class for DelayEffect object 
+    """
+    Increased time for data to travel between two points
 
-    Attributes
-    ----------
-    seconds : float
-        ?? desc ??
+    Inherits :class:`Degrade`.
+
+    :param seconds: Number of seconds to delay delivery of data
+    :type seconds: float, optional
+    :param kwargs: Arguments to pass to the :class:`Degrade` class
+    :type kwargs: dictionary, optional
+
+    :Example:
+        >>> from cyberdem.base import DelayEffect
+        >>> from datetime import datetime, timedelta
+        >>> kwargs = {
+        ...    'seconds': 22.5,
+        ...    'event_time': datetime.today(),
+        ...    'targets': [the_target.id],
+        ...    'duration': timedelta(minutes=5)
+        ...    'actor_ids': ["77545b7d-3900-4e34-a26f-eec5eb954d33"]
+        ... }
+        >>> delay_effect = DelayEffect(**kwargs)
     """
 
     _type = "DelayEffect"
@@ -1557,12 +1642,27 @@ class DelayEffect(Degrade):
 
 
 class JitterEffect(Degrade):
-    """Class for JitterEffect object 
+    """
+    Class for JitterEffect object 
 
-    Attributes
-    ----------
-    milliseconds : float
-        ?? desc ??
+    Inherits :class:`Degrade`.
+
+    :param milliseconds: [desc]
+    :type milliseconds: float, optional
+    :param kwargs: Arguments to pass to the :class:`Degrade` class
+    :type kwargs: dictionary, optional
+
+    :Example:
+        >>> from cyberdem.base import JitterEffect
+        >>> from datetime import datetime, timedelta
+        >>> kwargs = {
+        ...    'milliseconds': 22.5,
+        ...    'event_time': datetime.today(),
+        ...    'targets': [the_target.id],
+        ...    'duration': timedelta(minutes=5)
+        ...    'actor_ids': ["77545b7d-3900-4e34-a26f-eec5eb954d33"]
+        ... }
+        >>> jitter_effect = JitterEffect(**kwargs)
     """
 
     _type = "JitterEffect"
@@ -1586,12 +1686,28 @@ class JitterEffect(Degrade):
 
 
 class CPULoadEffect(Degrade):
-    """Class for CPULoadEffect object 
+    """
+    Artificial increase in CPU load. 
 
-    Attributes
-    ----------
-    percentage : float
-        ?? desc ??
+    Inherits :class:`Degrade`.
+
+    :param percentage: Percentage of CPU usage between 0.0 and 100.0
+    :type percentage: float, optional
+    :param kwargs: Arguments to pass to the :class:`Degrade` class
+    :type kwargs: dictionary, optional
+
+    :Example:
+        >>> from cyberdem.base import CPULoadEffect
+        >>> from datetime import datetime, timedelta
+        >>> kwargs = {
+        ...    'percentage': 70,
+        ...    'event_time': datetime.today(),
+        ...    'targets': [the_target.id],
+        ...    'phase': 'Start',
+        ...    'duration': timedelta(seconds=5)
+        ...    'actor_ids': ["77545b7d-3900-4e34-a26f-eec5eb954d33"]
+        ... }
+        >>> cpuload_effect = CPULoadEffect(**kwargs)
     """
 
     _type = "CPULoadEffect"
@@ -1615,12 +1731,28 @@ class CPULoadEffect(Degrade):
 
 
 class MemoryUseEffect(Degrade):
-    """Class for MemoryUseEffect object 
+    """
+    Artificial increase in memory usage. 
 
-    Attributes
-    ----------
-    percentage : float
-        ?? desc ??
+    Inherits :class:`Degrade`.
+
+    :param percentage: Percentage of memory to use between 0.0 and 100.0
+    :type percentage: float, optional
+    :param kwargs: Arguments to pass to the :class:`Degrade` class
+    :type kwargs: dictionary, optional
+
+    :Example:
+        >>> from cyberdem.base import MemoryUseEffect
+        >>> from datetime import datetime, timedelta
+        >>> kwargs = {
+        ...    'percentage': 70,
+        ...    'event_time': datetime.today(),
+        ...    'targets': [the_target.id],
+        ...    'phase': 'Start',
+        ...    'duration': timedelta(seconds=5)
+        ...    'actor_ids': ["77545b7d-3900-4e34-a26f-eec5eb954d33"]
+        ... }
+        >>> memuse_effect = MemoryUseEffect(**kwargs)
     """
 
     _type = "MemoryUseEffect"
@@ -1644,12 +1776,28 @@ class MemoryUseEffect(Degrade):
 
 
 class DropEffect(Degrade):
-    """Class for DropEffect object 
+    """
+    Packet dropping. 
 
-    Attributes
-    ----------
-    percentage : float
-        ?? desc ??
+    Inherits :class:`Degrade`.
+
+    :param percentage: Percentage of packets to drop between 0.0 and 100.0
+    :type percentage: float, optional
+    :param kwargs: Arguments to pass to the :class:`Degrade` class
+    :type kwargs: dictionary, optional
+
+    :Example:
+        >>> from cyberdem.base import DropEffect
+        >>> from datetime import datetime, timedelta
+        >>> kwargs = {
+        ...    'percentage': 99.5,
+        ...    'event_time': datetime.today(),
+        ...    'targets': [the_target.id],
+        ...    'phase': 'Start',
+        ...    'duration': timedelta(seconds=5)
+        ...    'actor_ids': ["77545b7d-3900-4e34-a26f-eec5eb954d33"]
+        ... }
+        >>> pdrop_effect = DropEffect(**kwargs)
     """
 
     _type = "DropEffect"
@@ -1673,14 +1821,33 @@ class DropEffect(Degrade):
 
 
 class HardwareDegradeEffect(Degrade):
-    """Class for HardwareDegradeEffect object 
+    """
+    Degradation, but not destruction of, hardware.
 
-    Attributes
-    ----------
-    degrade_type : HardwareDegradeType
-        From the HardwareDegradeType enumeration
-    percentage : float
-        ?? desc ??
+    Inherits :class:`Degrade`.
+
+    :param degrade_type: value from the
+        :class:`~cyberdem.enumerations.HardwareDegradeType` enumeration
+    :type degrade_type: string, optional
+    :param percentage: The effectiveness of the hardware for the duration of
+        the effect - between 0.0 and 100.0
+    :type percentage: float, optional
+    :param kwargs: Arguments to pass to the :class:`Degrade` class
+    :type kwargs: dictionary, optional
+
+    :Example:
+        >>> from cyberdem.base import HardwareDegradeEffect
+        >>> from datetime import datetime, timedelta
+        >>> kwargs = {
+        ...    'degrade_type': 'BlueScreen',
+        ...    'percentage': 90,
+        ...    'event_time': datetime.today(),
+        ...    'targets': [the_target.id],
+        ...    'phase': 'Start',
+        ...    'duration': timedelta(seconds=5)
+        ...    'actor_ids': ["77545b7d-3900-4e34-a26f-eec5eb954d33"]
+        ... }
+        >>> hw_effect = HardwareDegradeEffect(**kwargs)
     """
 
     _type = "HardwareDegradeEffect"
@@ -1715,14 +1882,33 @@ class HardwareDegradeEffect(Degrade):
 
 
 class OtherDegradeEffect(Degrade):
-    """Class for OtherDegradeEffect object 
+    """
+    Generic degradation effect.
 
-    Attributes
-    ----------
-    percentage : float
-        ?? desc ??
-    description : string
-        ?? desc ??
+    Inherits :class:`Degrade`.
+
+    :param percentage: Percentage of impacted capability's remaining
+        availability between 0.0 and 100.0
+    :type percentage: float, optional
+    :param description: Human-interpretable or machine-readable description of
+        the effect
+    :type description: string, optional
+    :param kwargs: Arguments to pass to the :class:`Degrade` class
+    :type kwargs: dictionary, optional
+
+    :Example:
+        >>> from cyberdem.base import OtherDegradeEffect
+        >>> from datetime import datetime, timedelta
+        >>> kwargs = {
+        ...    'degrade_type': 'BlueScreen',
+        ...    'percentage': 90,
+        ...    'event_time': datetime.today(),
+        ...    'targets': [the_target.id],
+        ...    'phase': 'Start',
+        ...    'duration': timedelta(seconds=5)
+        ...    'actor_ids': ["77545b7d-3900-4e34-a26f-eec5eb954d33"]
+        ... }
+        >>> other_effect = OtherDegradeEffect(**kwargs)
     """
 
     _type = "OtherDegradeEffect"
