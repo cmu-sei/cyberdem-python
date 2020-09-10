@@ -126,20 +126,23 @@ def main():
             fs.save(ot())
 
     # Build relationships between the known objects
-    fs.save(Relationship((ap.id, 'ConnectedTo', wan_ap.id)))
-    fs.save(Relationship((ap.id, 'ConnectedTo', ap_fw.id)))
-    fs.save(Relationship((ap.id, 'ConnectedTo', cisco_ios.id)))
-    fs.save(Relationship((firewall.id, 'ConnectedTo', ap_fw.id)))
-    fs.save(Relationship((firewall.id, 'ConnectedTo', fw_mtu.id)))
-    fs.save(Relationship((firewall.id, 'ConnectedTo', fw_hmi.id)))
-    fs.save(Relationship((firewall.id, 'ConnectedTo', redhat.id)))
-    fs.save(Relationship((mtu.id, 'ConnectedTo', fw_mtu.id)))
-    fs.save(Relationship((mtu.id, 'ConnectedTo', redhat.id)))
-    fs.save(Relationship((mtu.id, 'ConnectedTo', httpd_service.id)))
-    fs.save(Relationship((mtu.id, 'ConnectedTo', rapid_scada.id)))
-    fs.save(Relationship((hmi.id, 'ConnectedTo', fw_hmi.id)))
-    fs.save(Relationship((hmi.id, 'ConnectedTo', win_10.id)))
-    fs.save(Relationship((hmi.id, 'ConnectedTo', firefox.id)))
+    fs.save(Relationship(ap.id, wan_ap.id))
+    fs.save(Relationship(ap.id, ap_fw.id))
+    fs.save(Relationship(ap.id, cisco_ios.id))
+    fs.save(Relationship(firewall.id, ap_fw.id))
+    fs.save(Relationship(firewall.id, fw_mtu.id))
+    fs.save(Relationship(firewall.id, fw_hmi.id))
+    fs.save(Relationship(
+        redhat.id, firewall.id, relationship_type='ResidesOn'))
+    fs.save(Relationship(mtu.id, fw_mtu.id))
+    fs.save(Relationship(redhat.id, mtu.id, relationship_type='ResidesOn'))
+    fs.save(Relationship(
+        httpd_service.id, mtu.id, relationship_type='ResidesOn'))
+    fs.save(Relationship(
+        rapid_scada.id, mtu.id, relationship_type='ResidesOn'))
+    fs.save(Relationship(hmi.id, fw_hmi.id))
+    fs.save(Relationship(win_10.id, hmi.id, relationship_type='ResidesOn'))
+    fs.save(Relationship(firefox.id, hmi.id, relationship_type='ResidesOn'))
 
     # @TODO Save the  events of a specific attack chain against the toy network
     # phishing attack via email targeting the SCADA administrator

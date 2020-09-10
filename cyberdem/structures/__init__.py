@@ -32,36 +32,43 @@ class Relationship():
     """Represents a relationship between two CyberObjects.
 
     Given two CyberObjects A and B, where A administers B, the
-    ``related_object_struct`` would be represented as (A_ID, "Administers",
-    B_ID).
+    ``related_object_1`` would be the id of A and ``related_object_2`` would be
+    the ID of B, preserving the ordering of "A administers B". 
 
-    :param related_object_struct: defines the relationship between the two
-        objects; format: (ObjA_ID_string,
-        :class:`~cyberdem.enumerations.RelationshipType` string,
-        ObjB_ID_string)
-    :type related_object_struct: 3-tuple, required
+    :param related_object_1: ID of a CyberObject
+    :type related_object_1: UUIDv4 string, required
+    :param related_object_2: ID of a CyberObject
+    :type related_object_2: UUIDv4 string, required
+    :param relationship_type: value from
+        :class:`~cyberdem.enumerations.RelationshipType`
+    :type relationship_type: string, optional
     :param id: unique ID (UUIDv4)
     :type id: string, optional
     :param privileges: [desc]
     :type privileges: list of strings, optional
 
-    :raises ValueError: if the provided ``id`` is not a string formatted UUIDv4
-
     :Example:
-        >>> from cyberdem.base import Application,Device
+        >>> # Where my_application is installed on my_device
+        >>> from cyberdem.base import Application, Device
+        >>> from cyberdem.structures import Relationship
         >>> my_application = Application()
         >>> my_device = Device()
-        >>> rel_struct = (my_application.id, 'Administers', my_device.id)
-        >>> my_rel = Relationship(rel_struct, privileges=['priv1', 'priv2'])
+        >>> my_rel = Relationship(my_device.id, my_application.id,
+        ...    relationship_type='ResidesOn', privileges=['priv1', 'priv2'])
     """
 
     _type = "Relationship"
 
-    def __init__(self, related_object_struct, id=None, privileges=None):
+    def __init__(
+            self, related_object_1, related_object_2, relationship_type=None,
+            id=None, privileges=None):
         if id is None:
             id = str(uuid.uuid4())
         self.id = id
-        self.related_object_struct = related_object_struct
+        self.related_object_1 = related_object_1
+        self.related_object_2 = related_object_2
+        if relationship_type:
+            self.relationship_type = relationship_type
         if privileges:
             self.privileges = privileges
 
@@ -79,22 +86,41 @@ class Relationship():
         self._id = value
 
     @property
-    def related_object_struct(self):
-        return self._related_object_struct
+    def related_object_1(self):
+        return self._related_object_1
 
-    @related_object_struct.setter
-    def related_object_struct(self, value):
-        if not isinstance(value, tuple):
-            raise TypeError(
-                f'{type(value)} is not a valid type for related_object_struct.'
-                f' Must be a 3-tuple. Ex. "(object_A_ID, RelationshipType, '
-                f'object_B_ID)"')
-        if len(value) != 3:
+    @related_object_1.setter
+    def related_object_1(self, value):
+        try:
+            uuid.UUID(value)
+        except ValueError:
             raise ValueError(
-                f'related_object_struct should have three items. Ex. '
-                f'"(object_A_ID, RelationshipType, object_B_ID)"')
-        RelationshipType()._check_prop(value[1])
-        self._related_object_struct = value
+                f'"{value}" is not a valid value for related_object_1. Must be'
+                f' a UUIDv4 in string format')
+        self._related_object_1 = value
+    
+    @property
+    def related_object_2(self):
+        return self._related_object_2
+
+    @related_object_2.setter
+    def related_object_2(self, value):
+        try:
+            uuid.UUID(value)
+        except ValueError:
+            raise ValueError(
+                f'"{value}" is not a valid value for related_object_2. Must be'
+                f' a UUIDv4 in string format')
+        self._related_object_2 = value
+
+    @property
+    def relationship_type(self):
+        return self._relationship_type
+
+    @relationship_type.setter
+    def relationship_type(self, value):
+        RelationshipType()._check_prop(value)
+        self._relationship_type = value
 
     @property
     def privileges(self):

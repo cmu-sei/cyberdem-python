@@ -350,14 +350,13 @@ class ReconType(_CyberDEMEnumeration):
 class RelationshipType(_CyberDEMEnumeration):
     """CyberDEM RelationshipType enumeration
 
-    :options: 'Administers', 'ComponentOf', 'ConnectedTo', 'ContainedIn', 
-        'ProvidedBy', 'ResidesOn'
+    :options: 'Administers', 'ComponentOf', 'ContainedIn', 'ProvidedBy',
+        'ResidesOn'
     """
 
     _opts = [
         'Administers',
         'ComponentOf',
-        'ConnectedTo',
         'ContainedIn',
         'ProvidedBy',
         'ResidesOn'

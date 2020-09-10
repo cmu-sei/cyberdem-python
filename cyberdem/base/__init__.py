@@ -99,29 +99,24 @@ class _CyberObject(_CyberDEMBase):
     CyberObjects are persistent objects on a network or other cyber
     infrastructure.
 
-    Inherits :class:`_CyberDEMBase`. Optionally sets the name, description,
-    and/or related_objects parameters for any CyberObject subclass.
+    Inherits :class:`_CyberDEMBase`. Optionally sets the name and/or
+    description parameters for any CyberObject subclass.
 
     :param name: The name of the object
     :type name: string, optional
     :param description: A description of the object
     :type description: string, optional
-    :param related_objects: A list of
-        :class:`~cyberdem.structures.Relationship` IDs
-    :type related_objects: list, optional
     :param kwargs: Arguments to pass to the :class:`_CyberDEMBase` class
     :type kwargs: dictionary, optional
     """
 
     def __init__(
-            self, name=None, description=None, related_objects=None, **kwargs):
+            self, name=None, description=None, **kwargs):
         super().__init__(**kwargs)
         if name:
             self.name = name
         if description:
             self.description = description
-        if related_objects:
-            self.related_objects = related_objects
 
     @property
     def name(self):
@@ -146,18 +141,6 @@ class _CyberObject(_CyberDEMBase):
                 f'{type(value)} is not a valid type for description. Must be '
                 f'string.')
         self._description = value
-
-    @property
-    def related_objects(self):
-        return self._related_objects
-
-    @related_objects.setter
-    def related_objects(self, value):
-        if not isinstance(value, list):
-            raise TypeError(
-                f'{type(value)} is not a valid type for related_objects. Must '
-                f'be list of IDs.')
-        self._related_objects = value
 
 
 class _CyberEvent(_CyberDEMBase):
