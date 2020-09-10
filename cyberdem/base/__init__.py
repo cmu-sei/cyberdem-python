@@ -6,18 +6,18 @@ CyberDEM Python
 Copyright 2020 Carnegie Mellon University.
 
 NO WARRANTY. THIS CARNEGIE MELLON UNIVERSITY AND SOFTWARE ENGINEERING INSTITUTE
-MATERIAL IS FURNISHED ON AN "AS-IS" BASIS. CARNEGIE MELLON UNIVERSITY MAKES NO 
-WARRANTIES OF ANY KIND, EITHER EXPRESSED OR IMPLIED, AS TO ANY MATTER 
-INCLUDING, BUT NOT LIMITED TO, WARRANTY OF FITNESS FOR PURPOSE OR 
-MERCHANTABILITY, EXCLUSIVITY, OR RESULTS OBTAINED FROM USE OF THE MATERIAL. 
-CARNEGIE MELLON UNIVERSITY DOES NOT MAKE ANY WARRANTY OF ANY KIND WITH RESPECT 
+MATERIAL IS FURNISHED ON AN "AS-IS" BASIS. CARNEGIE MELLON UNIVERSITY MAKES NO
+WARRANTIES OF ANY KIND, EITHER EXPRESSED OR IMPLIED, AS TO ANY MATTER
+INCLUDING, BUT NOT LIMITED TO, WARRANTY OF FITNESS FOR PURPOSE OR
+MERCHANTABILITY, EXCLUSIVITY, OR RESULTS OBTAINED FROM USE OF THE MATERIAL.
+CARNEGIE MELLON UNIVERSITY DOES NOT MAKE ANY WARRANTY OF ANY KIND WITH RESPECT
 TO FREEDOM FROM PATENT, TRADEMARK, OR COPYRIGHT INFRINGEMENT.
 
-Released under a MIT (SEI)-style license, please see license.txt or contact 
+Released under a MIT (SEI)-style license, please see license.txt or contact
 permission@sei.cmu.edu for full terms.
 
-[DISTRIBUTION STATEMENT A] This material has been approved for public release 
-and unlimited distribution.  Please see Copyright notice for non-US Government 
+[DISTRIBUTION STATEMENT A] This material has been approved for public release
+and unlimited distribution. Please see Copyright notice for non-US Government
 use and distribution.
 
 DM20-0711
@@ -45,12 +45,12 @@ class _CyberDEMBase():
     """
 
     _type = None
-    
+
     def __init__(self, id=None, **kwargs):
         if id is None:
             id = str(uuid.uuid4())
         self.id = id
-        
+
     @property
     def id(self):
         return self._id
@@ -92,7 +92,7 @@ class _CyberDEMBase():
         return serialized
 
 
-## Second level CyberDEM objects
+# Second level CyberDEM objects
 class _CyberObject(_CyberDEMBase):
     """Superclass for all CyberDEM CyberObjects
 
@@ -100,20 +100,21 @@ class _CyberObject(_CyberDEMBase):
     infrastructure.
 
     Inherits :class:`_CyberDEMBase`. Optionally sets the name, description,
-    and/or related_objects parameters for any CyberObject subclass. 
+    and/or related_objects parameters for any CyberObject subclass.
 
     :param name: The name of the object
     :type name: string, optional
     :param description: A description of the object
     :type description: string, optional
-    :param related_objects: A list of :class:`~cyberdem.structures.Relationship` IDs
+    :param related_objects: A list of
+        :class:`~cyberdem.structures.Relationship` IDs
     :type related_objects: list, optional
     :param kwargs: Arguments to pass to the :class:`_CyberDEMBase` class
     :type kwargs: dictionary, optional
     """
 
-    def __init__(self, name=None, description=None, related_objects=None,
-            **kwargs):
+    def __init__(
+            self, name=None, description=None, related_objects=None, **kwargs):
         super().__init__(**kwargs)
         if name:
             self.name = name
@@ -154,12 +155,11 @@ class _CyberObject(_CyberDEMBase):
     def related_objects(self, value):
         if not isinstance(value, list):
             raise TypeError(
-                f'{type(value)} is not a valid type for related_objects. Must be '
-                f'list of IDs.')
-        # @TODO: implement check for each item in value is a relationship object
+                f'{type(value)} is not a valid type for related_objects. Must '
+                f'be list of IDs.')
         self._related_objects = value
 
-    
+
 class _CyberEvent(_CyberDEMBase):
     """Superclass for all CyberDEM CyberEvents
 
@@ -167,13 +167,13 @@ class _CyberEvent(_CyberDEMBase):
     CyberObjects.
 
     Inherits :class:`_CyberDEMBase`. Optionally sets the event_time,
-    targets, cyber event phase, duration, actor_ids, and/or source_ids 
-    parameters for any CyberEvent subclass. 
-    
+    targets, cyber event phase, duration, actor_ids, and/or source_ids
+    parameters for any CyberEvent subclass.
+
     :param event_time: Time at which the event started
     :type event_time: datetime.datetime, optional
-    :param targets: One or IDs identifying the CyberObject(s) targeted in the
-        event
+    :param targets: One or more IDs identifying the CyberObject(s) targeted in
+        the event
     :type targets: list, optional
     :param target_modifiers: mapping of target characteristics to values
     :type target_modifiers: dictionary, optional
@@ -192,7 +192,8 @@ class _CyberEvent(_CyberDEMBase):
     :type kwargs: dictionary, optional
     """
 
-    def __init__(self, event_time=None, targets=None, target_modifiers=None,
+    def __init__(
+            self, event_time=None, targets=None, target_modifiers=None,
             phase=None, duration=None, actor_ids=None, source_ids=None,
             **kwargs):
         super().__init__(**kwargs)
@@ -244,7 +245,7 @@ class _CyberEvent(_CyberDEMBase):
     @property
     def target_modifiers(self):
         return self._target_modifiers
-    
+
     @targets.setter
     def targets(self, value):
         if not isinstance(value, dict):
@@ -299,19 +300,19 @@ class _CyberEvent(_CyberDEMBase):
         self._source_ids = value
 
 
-### Third level CyberDEM CyberEvents
+# Third level CyberDEM CyberEvents
 class _CyberEffect(_CyberEvent):
     """Passive superclass for all CyberDEM CyberEffects.
-    
+
     Inherits :class:`_CyberEvent`. No additional attributes.
     """
-    
+
     pass
 
 
 class _CyberAction(_CyberEvent):
     """Passive superclass for all CyberDEM CyberActions.
-    
+
     Inherits :class:`_CyberEvent`. Included for completeness of the CyberDEM
     standard.
     """
@@ -319,7 +320,7 @@ class _CyberAction(_CyberEvent):
     pass
 
 
-### Third level CyberDEM CyberObjects
+# Third level CyberDEM CyberObjects
 class Application(_CyberObject):
     """Representation of an Application object.
 
@@ -366,16 +367,16 @@ class Data(_CyberObject):
     Inherits :class:`_CyberObject`.
 
     :param sensitivity: [desc]
-    :type sensitivity: value from 
-        :class:`~cyberdem.enumerations.SensitivityType` enumeration, optional 
+    :type sensitivity: value from
+        :class:`~cyberdem.enumerations.SensitivityType` enumeration, optional
     :param data_type: [desc]
-    :type data_type: value from 
+    :type data_type: value from
         :class:`~cyberdem.enumerations.DataType` enumeration, optional
     :param encrypted: [desc]
-    :type encrypted: value from 
+    :type encrypted: value from
         :class:`~cyberdem.enumerations.EncryptionType` enumeration, optional
     :param status: [desc]
-    :type status: value from 
+    :type status: value from
         :class:`~cyberdem.enumerations.DataStatus` enumeration, optional
     :param confidentiality: [desc]
     :type confidentiality: float, optional
@@ -396,7 +397,8 @@ class Data(_CyberObject):
 
     _type = "Data"
 
-    def __init__(self, sensitivity=None, data_type=None, encrypted=None,
+    def __init__(
+            self, sensitivity=None, data_type=None, encrypted=None,
             status=None, confidentiality=None, **kwargs):
         super().__init__(**kwargs)
         if sensitivity:
@@ -448,8 +450,8 @@ class Data(_CyberObject):
     def confidentiality(self, value):
         if not isinstance(value, float):
             raise TypeError(
-                f'{type(value)} is not a valid type for confidentiality. Must be '
-                f'float.')
+                f'{type(value)} is not a valid type for confidentiality. Must '
+                f'be float.')
         self._confidentiality = value
 
 
@@ -459,7 +461,7 @@ class Device(_CyberObject):
     Inherits :class:`_CyberObject`.
 
     :param device_types: Type of device (ex. "Sensor", "Printer")
-    :type device_types: value from the 
+    :type device_types: value from the
         :class:`~cyberdem.enumerations.DeviceType` enumeration, optional
     :param is_virtual: whether the device is a virtual device
     :type is_virtual: boolean, optional
@@ -471,7 +473,7 @@ class Device(_CyberObject):
     :type network_interfaces: list of tuples, optional
     :param kwargs: Arguments to pass to the :class:`_CyberObject` class
     :type kwargs: dictionary, optional
-    
+
     :Example:
         >>> from cyberdem.base import Device
         >>> kwargs = {
@@ -488,7 +490,8 @@ class Device(_CyberObject):
 
     _type = "Device"
 
-    def __init__(self, device_types=None, is_virtual=None, role=None,
+    def __init__(
+            self, device_types=None, is_virtual=None, role=None,
             device_identifier=None, network_interfaces=None, **kwargs):
         super().__init__(**kwargs)
         if device_types:
@@ -572,14 +575,14 @@ class Network(_CyberObject):
     Inherits :class:`_CyberObject`.
 
     :param protocol: protocol used on the network
-    :type protocol: value from the 
+    :type protocol: value from the
         :class:`~cyberdem.enumerations.NetworkProtocolType` enumeration,
         optional
     :param mask: network mask
     :type mask: string, optional
     :param kwargs: Arguments to pass to the :class:`_CyberObject` class
     :type kwargs: dictionary, optional
-    
+
     :Example:
         >>> from cyberdem.base import Network
         >>> kwargs = {
@@ -628,10 +631,10 @@ class NetworkLink(_CyberObject):
     :param is_logical: the link is logical (rather than physical)
     :type is_logical: boolean, optional
     :param physical_layer: what type is the physical layer
-    :type physical_layer: value from the 
+    :type physical_layer: value from the
         :class:`~cyberdem.enumerations.PhysicalLayerType` enumeration, optional
     :param data_link_protocol: data link protocol
-    :type data_link_protocol: value from the 
+    :type data_link_protocol: value from the
         :class:`~cyberdem.enumerations.DataLinkProtocolType` enumeration,
         optional
     :param bandwidth: Max data transfer rate of the link in Gb
@@ -644,7 +647,7 @@ class NetworkLink(_CyberObject):
     :type network_interfaces: list of tuples, optional
     :param kwargs: Arguments to pass to the :class:`_CyberObject` class
     :type kwargs: dictionary, optional
-    
+
     :Example:
         >>> from cyberdem.base import NetworkLink
         >>> kwargs = {
@@ -661,7 +664,8 @@ class NetworkLink(_CyberObject):
 
     _type = "NetworkLink"
 
-    def __init__(self, is_logical=None, physical_layer=None, 
+    def __init__(
+            self, is_logical=None, physical_layer=None,
             data_link_protocol=None, bandwidth=None, latency=None, jitter=None,
             network_interfaces=None, **kwargs):
         super().__init__(**kwargs)
@@ -733,7 +737,7 @@ class NetworkLink(_CyberObject):
                 f'{type(value)} is not a valid type for latency. Must be '
                 f'int.')
         self._latency = value
-    
+
     @property
     def jitter(self):
         return self._jitter
@@ -786,9 +790,9 @@ class System(_CyberObject):
     """Representation of a System object.
 
     Inherits :class:`_CyberObject`.
-    
+
     :param system_type: Type of system
-    :type system_type: value from the 
+    :type system_type: value from the
         :class:`~cyberdem.enumerations.SystemType` enumeration, optional
     :param kwargs: Arguments to pass to the :class:`_CyberObject` class
     :type kwargs: dictionary, optional
@@ -820,14 +824,14 @@ class System(_CyberObject):
         self._system_type = value
 
 
-#### Fourth level CyberDEM CyberObjects
+# Fourth level CyberDEM CyberObjects
 class OperatingSystem(_CyberObject):
     """Representation of a OperatingSystem object.
 
     Inherits :class:`_CyberObject`.
-    
+
     :param os_type: Type of operating system
-    :type os_type: value from the 
+    :type os_type: value from the
         :class:`~cyberdem.enumerations.OperatingSystemType` enumeration,
         optional
     :param kwargs: Arguments to pass to the :class:`_CyberObject` class
@@ -864,9 +868,9 @@ class Service(Application):
     """Representation of a Service object.
 
     Inherits :class:`Application`.
-    
+
     :param service_type: Type of service
-    :type os_type: value from the 
+    :type os_type: value from the
         :class:`~cyberdem.enumerations.ServiceType` enumeration, optional
     :param address:
     :type address: string, optional
@@ -915,7 +919,7 @@ class Service(Application):
         self._address = value
 
 
-#### Fourth level CyberDEM CyberEvents
+# Fourth level CyberDEM CyberEvents
 class CyberAttack(_CyberAction):
     """Representation of a CyberAttack object.
 
@@ -937,7 +941,7 @@ class CyberAttack(_CyberAction):
 
     _type = "CyberAttack"
 
-    
+
 class CyberDefend(_CyberAction):
     """Representation of a CyberDefend object.
 
@@ -958,11 +962,11 @@ class CyberDefend(_CyberAction):
 
     _type = "CyberDefend"
 
-    
+
 class CyberRecon(_CyberAction):
     """Representation of a CyberRecon object.
 
-    Inherits :class:`_CyberAction`. 
+    Inherits :class:`_CyberAction`.
 
     :param recon_type: Type of reconnaissance
     :type recon_type: value from the :class:`~cyberdem.enumerations.ReconType`
@@ -1031,7 +1035,7 @@ class Detect(_CyberEffect):
     """
     To discover or discern the existence, presence, or fact of an intrusion
     into information systems.
-    
+
     Inherits :class:`_CyberEffect`.
 
     :param acquired_information: information obtained during detection
@@ -1071,7 +1075,7 @@ class Detect(_CyberEffect):
                 f'{type(value)} is not a valid type for acquired_information. '
                 f'Must be dict.')
         self._acquired_information = value
-    
+
 
 class Manipulate(_CyberEffect):
     """
@@ -1119,14 +1123,14 @@ class Manipulate(_CyberEffect):
                 f'string.')
         self._description = value
 
-    
-#### Fifth level CyberDEM CyberEvents
+
+# Fifth level CyberDEM CyberEvents
 class DataExfiltration(CyberAttack):
     """
     Data exfiltration is the unauthorized copying, transfer or retrieval of
     data from a computer or server. Data exfiltration is a malicious activity
     performed through various different techniques, typically by cybercriminals
-    over the Internet or other network. 
+    over the Internet or other network.
 
     Inherits :class:`CyberAttack`. No additional attributes.
 
@@ -1271,7 +1275,7 @@ class PacketManipulationEffect(Manipulate):
     Inherits :class:`Manipulate`.
 
     :param manipulation_type: type of manipulation
-    :type manipulation_type: value from 
+    :type manipulation_type: value from
         :class:`~cyberdem.enumerations.PacketManipulationType` enumeration,
         optional
     :param percentage: Percentage of packets to affect between 0.0 and 100.0
@@ -1330,8 +1334,8 @@ class ManipulationAttack(CyberAttack):
     """
     Controls or changes information, information systems, and/or networks to
     create physical denial effects, using deception, decoying, conditioning,
-    spoofing, falsification, and other similar techniques 
-    
+    spoofing, falsification, and other similar techniques.
+
     Inherits :class:`CyberAttack`.
 
     :param description: Describes the "what and how" of the manipulation attack
@@ -1384,8 +1388,8 @@ class ManipulationAttack(CyberAttack):
     def attack_content(self, value):
         if not isinstance(value, str):
             raise TypeError(
-                f'{type(value)} is not a valid type for attack_content. Must be '
-                f'string.')
+                f'{type(value)} is not a valid type for attack_content. Must '
+                f'be string.')
         self._attack_content = value
 
 
@@ -1396,9 +1400,9 @@ class PhishingAttack(CyberAttack):
     unknowingly initiate another attack.
 
     Inherits :class:`CyberAttack`.
-    
+
     :param message_type: type of message. Ex. "Email"
-    :type message_type: value from the 
+    :type message_type: value from the
         :class:`~cyberdem.enumerations.MessageType` enumeration, optional
     :param header: Originator, From, To, Subject, Reply To
     :type header: string, optional
@@ -1464,7 +1468,7 @@ class PhishingAttack(CyberAttack):
         self._body = value
 
 
-###### Sixth level CyberDEM CyberEvents --> CyberEffects
+# Sixth level CyberDEM CyberEvents --> CyberEffects
 class BlockTrafficEffect(Disrupt):
     """
     Completely block all traffic over a communication channel.
@@ -1545,7 +1549,7 @@ class LoadRateEffect(Degrade):
     :param percentage: Percentage of maximum achievable rate between 0.0 and
         100.0
     :type percentage: float, optional
-    :param rate_type: value from the 
+    :param rate_type: value from the
         :class:`~cyberdem.enumerations.LoadRateType` enumeration
     :type rate_type: string, optional
     :param kwargs: Arguments to pass to the :class:`Degrade` class
@@ -1643,7 +1647,7 @@ class DelayEffect(Degrade):
 
 class JitterEffect(Degrade):
     """
-    Class for JitterEffect object 
+    Class for JitterEffect object.
 
     Inherits :class:`Degrade`.
 
@@ -1687,7 +1691,7 @@ class JitterEffect(Degrade):
 
 class CPULoadEffect(Degrade):
     """
-    Artificial increase in CPU load. 
+    Artificial increase in CPU load.
 
     Inherits :class:`Degrade`.
 
@@ -1732,7 +1736,7 @@ class CPULoadEffect(Degrade):
 
 class MemoryUseEffect(Degrade):
     """
-    Artificial increase in memory usage. 
+    Artificial increase in memory usage.
 
     Inherits :class:`Degrade`.
 
@@ -1777,7 +1781,7 @@ class MemoryUseEffect(Degrade):
 
 class DropEffect(Degrade):
     """
-    Packet dropping. 
+    Packet dropping.
 
     Inherits :class:`Degrade`.
 

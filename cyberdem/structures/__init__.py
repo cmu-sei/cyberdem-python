@@ -40,13 +40,12 @@ class Relationship():
         :class:`~cyberdem.enumerations.RelationshipType` string,
         ObjB_ID_string)
     :type related_object_struct: 3-tuple, required
-    :param id: string formatted UUIDv4 prefixed with "relationship--"
+    :param id: unique ID (UUIDv4)
     :type id: string, optional
     :param privileges: [desc]
     :type privileges: list of strings, optional
 
     :raises ValueError: if the provided ``id`` is not a string formatted UUIDv4
-        prefixed with "relationship--"
 
     :Example:
         >>> from cyberdem.base import Application,Device
@@ -56,9 +55,11 @@ class Relationship():
         >>> my_rel = Relationship(rel_struct, privileges=['priv1', 'priv2'])
     """
 
+    _type = "Relationship"
+
     def __init__(self, related_object_struct, id=None, privileges=None):
         if id is None:
-            id = 'relationship--' + str(uuid.uuid4())
+            id = str(uuid.uuid4())
         self.id = id
         self.related_object_struct = related_object_struct
         if privileges:
@@ -71,7 +72,7 @@ class Relationship():
     @id.setter
     def id(self, value):
         try:
-            uuid.UUID(value.replace('relationship--', ''))
+            uuid.UUID(value)
         except ValueError:
             raise ValueError(
                 f'"{value}" is not a valid value for id. Must be a UUIDv4.')
@@ -110,3 +111,13 @@ class Relationship():
                 raise TypeError(
                     f'RelatedObject privilege list takes only string types')
         self._privileges = value
+
+    def _serialize(self):
+        serialized = {}
+        for key, value in self.__dict__.items():
+            if key.startswith('_'):
+                serialized[key[1:]] = value
+            else:
+                serialized[key] = value
+            serialized['_type'] = self._type
+        return serialized

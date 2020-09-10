@@ -37,6 +37,7 @@ $ python3 example.py
 
 [expected output]
 ```
+You will see a folder called "test-fs" in the directory in which you ran the [example.py](example.py) script. This folder has subfolders containing each type of Cyber DEM object/event.
 
 ## License
 

@@ -25,6 +25,7 @@ DM20-0711
 
 
 from cyberdem import base
+from cyberdem.structures import Relationship
 import inspect
 import json
 import os
@@ -51,7 +52,7 @@ class FileSystem():
 
     # find the types of objects allowed from the base module and map the "type"
     # attribute to the class method
-    obj_types = {}
+    obj_types = {'Relationship': Relationship}
     for name, test_obj in inspect.getmembers(base, inspect.isclass):
         if test_obj.__module__ == 'cyberdem.base':
             if test_obj._type:
