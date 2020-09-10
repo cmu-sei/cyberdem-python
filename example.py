@@ -37,7 +37,7 @@ def main():
 
     # Instantiate a known set of CyberObjects
     ap = Device(
-        name="Access Point", description="Main access point", is_virtua=False,
+        name="Access Point", description="Main access point", is_virtual=False,
         network_interfaces=[("eth0", "10.10.30.40"),("eth1", "192.168.10.2")])
     fs.save(ap)
 
@@ -53,8 +53,8 @@ def main():
     fs.save(mtu)
 
     hmi = Device(
-        name="HMI", description="HMI Workstation", is_virtual=False,
-        network_interfaces=[("eth0", "192.168.10.7")])
+        name="HMI", description="HMI Workstation", device_types=['HMI'],
+        is_virtual=False, network_interfaces=[("eth0", "192.168.10.7")])
     fs.save(hmi)
 
     wan_ap = NetworkLink(

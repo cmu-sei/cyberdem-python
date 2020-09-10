@@ -53,7 +53,8 @@ class Relationship():
         >>> from cyberdem.structures import Relationship
         >>> my_application = Application()
         >>> my_device = Device()
-        >>> my_rel = Relationship(my_device.id, my_application.id,
+        >>> my_rel = Relationship(
+        ...    my_device.id, my_application.id,
         ...    relationship_type='ResidesOn', privileges=['priv1', 'priv2'])
     """
 

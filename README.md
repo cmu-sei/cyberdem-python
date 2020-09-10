@@ -34,6 +34,18 @@ You may also try running the example.py file downloaded with the zip file.
 
 ```
 $ python3 example.py
+Creating new FileSystem path ./test-fs.
+
+QUERY 1
+--------
+['description', 'id', 'name', 'version', '_type']
+('Rapid SCADA software', '0f717dfa-...', 'Rapid SCADA', '5', 'Application')
+('PfSense Firewall', '2720359e-...', 'PfSense', '2.4.2', 'Application')
+(None, '2f6ac399-...', None, None, 'Application')
+(None, 'd36e99ce-...', None, None, 'Application')
+('Firefox browser', 'df8478d6-...', 'Firefox', '60', 'Application')
+(None, '0eaacdbc-...', None, None, 'Application')
+(None, '6265eb88-...', None, None, 'Application')
 
 [expected output]
 ```
