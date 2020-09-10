@@ -152,7 +152,7 @@ def main():
 
     # @TODO Query the file system
     headers, resp = fs.query("SELECT * FROM Application")
-    print(f'\nQUERY 1\n--------\n{headers}')
+    print(f'\nQUERY 1: SELECT * FROM Application\n--------\n{headers}')
     for line in resp:
         print(line)
 
@@ -164,16 +164,25 @@ def main():
     for line in resp:
         print(line)
 
-    query3 = "SELECT id FROM Application WHERE name='My application' AND version='2.4'"
+    query3 = (
+        "SELECT id FROM Application,OperatingSystem "
+        "WHERE name='PfSense' OR os_type='LinuxRedHat'")
     headers, resp = fs.query(query3)
-    print(f'\nQUERY 3\n--------\n{headers}')
+    print(f'\nQUERY 3: {query3}\n--------\n{headers}')
     for line in resp:
         print(line)
 
-    # @TODO Load instances of objects and events from the file system
+    # Load instances of objects and events from the file system
     # change some property and re-save the instance
+    print("\nUpdating app versions...")
     for line in resp:
-        an_instance = fs.get(line[0])
+        app = fs.get(line[0])
+        if isinstance(app, Application):
+            app.version = '2.5.0'
+        else:
+            app.version = '8.0'
+        print(app)
+        fs.save(app, overwrite=True)
 
 
 if __name__ == "__main__":
