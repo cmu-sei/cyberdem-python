@@ -108,6 +108,10 @@ def main():
         service_type='WebService', address='192.168.100.40')
     fs.save(httpd_service)
 
+    generic_admin = Persona(
+        name="Network admin", description="Runs the systems")
+    fs.save(generic_admin)
+
     # Save a bunch of random objects
     obj_types = [
         Application, Data, Device, Network, NetworkLink, Persona,
@@ -121,33 +125,52 @@ def main():
         for _ in range(0, 4):
             fs.save(ot())
 
-    # @TODO Build relationships between the known objects
+    # Build relationships between the known objects
     fs.save(Relationship((ap.id, 'ConnectedTo', wan_ap.id)))
+    fs.save(Relationship((ap.id, 'ConnectedTo', ap_fw.id)))
+    fs.save(Relationship((ap.id, 'ConnectedTo', cisco_ios.id)))
+    fs.save(Relationship((firewall.id, 'ConnectedTo', ap_fw.id)))
+    fs.save(Relationship((firewall.id, 'ConnectedTo', fw_mtu.id)))
+    fs.save(Relationship((firewall.id, 'ConnectedTo', fw_hmi.id)))
+    fs.save(Relationship((firewall.id, 'ConnectedTo', redhat.id)))
+    fs.save(Relationship((mtu.id, 'ConnectedTo', fw_mtu.id)))
+    fs.save(Relationship((mtu.id, 'ConnectedTo', redhat.id)))
+    fs.save(Relationship((mtu.id, 'ConnectedTo', httpd_service.id)))
+    fs.save(Relationship((mtu.id, 'ConnectedTo', rapid_scada.id)))
+    fs.save(Relationship((hmi.id, 'ConnectedTo', fw_hmi.id)))
+    fs.save(Relationship((hmi.id, 'ConnectedTo', win_10.id)))
+    fs.save(Relationship((hmi.id, 'ConnectedTo', firefox.id)))
 
-    # @TODO Instantiate events of a specific attack
+    # @TODO Save the  events of a specific attack chain against the toy network
+    # phishing attack via email targeting the SCADA administrator
+    fs.save(PhishingAttack(
+        message_type='Email', targets=[generic_admin.id],
+        event_time=datetime(2020, 9, 18)))
 
     # @TODO Query the file system
     headers, resp = fs.query("SELECT * FROM Application")
-    print(f'QUERY 1\n--------\n{headers}')
+    print(f'\nQUERY 1\n--------\n{headers}')
     for line in resp:
         print(line)
 
-    query2 = "SELECT description,name FROM * WHERE (name='My application' AND version='2.4') OR system_type='C3'"
+    query2 = (
+        "SELECT description,name FROM * "
+        "WHERE (name='My application' AND version='2.4') OR system_type='C3'")
     headers, resp = fs.query(query2)
-    print(f'QUERY 2\n--------\n{headers}')
+    print(f'\nQUERY 2\n--------\n{headers}')
     for line in resp:
         print(line)
 
-    #query3 = "SELECT id FROM Application WHERE (name='My application' AND version='2.4') OR system_type='C3'"
+    query3 = "SELECT id FROM Application WHERE name='My application' AND version='2.4'"
     headers, resp = fs.query(query3)
-    print(f'QUERY 3\n--------\n{headers}')
+    print(f'\nQUERY 3\n--------\n{headers}')
     for line in resp:
         print(line)
 
     # @TODO Load instances of objects and events from the file system
     # change some property and re-save the instance
     for line in resp:
-        obj_instance = fs.get(line[0])
+        an_instance = fs.get(line[0])
 
 
 if __name__ == "__main__":

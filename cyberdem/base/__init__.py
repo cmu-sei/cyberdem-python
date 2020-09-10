@@ -246,8 +246,8 @@ class _CyberEvent(_CyberDEMBase):
     def target_modifiers(self):
         return self._target_modifiers
 
-    @targets.setter
-    def targets(self, value):
+    @target_modifiers.setter
+    def target_modifiers(self, value):
         if not isinstance(value, dict):
             raise TypeError(
                 f'{type(value)} is not a valid type for target_modifiers. Must'
