@@ -51,6 +51,10 @@ QUERY 1
 ```
 You will see a folder called "test-fs" in the directory in which you ran the [example.py](example.py) script. This folder has subfolders containing each type of Cyber DEM object/event.
 
+### Documentation
+
+The code documentation can be found as a pdf [here](assets/cyberdempython.pdf).
+
 ## License
 
 Copyright 2020 Carnegie Mellon University. See the [LICENSE.md](LICENSE.md) file for details.
