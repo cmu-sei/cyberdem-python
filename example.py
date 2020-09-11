@@ -196,6 +196,7 @@ def main():
     print("\nUpdating app versions...")
     for line in resp:
         app = fs.get(line[0])
+        del app.description
         if isinstance(app, Application):
             app.version = '2.5.0'
         else:

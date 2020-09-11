@@ -123,6 +123,10 @@ class Relationship():
         RelationshipType()._check_prop(value)
         self._relationship_type = value
 
+    @relationship_type.deleter
+    def relationship_type(self):
+        del self._relationship_type
+
     @property
     def privileges(self):
         return self._privileges
@@ -138,6 +142,10 @@ class Relationship():
                 raise TypeError(
                     f'RelatedObject privilege list takes only string types')
         self._privileges = value
+
+    @privileges.deleter
+    def privileges(self):
+        del self._privileges
 
     def _serialize(self):
         serialized = {}
