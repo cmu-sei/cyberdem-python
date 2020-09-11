@@ -231,7 +231,7 @@ class FileSystem():
             q_where = query_string[query_string.find(" WHERE ")+7:]
             q_from = q_from[:q_from.find(" WHERE ")]
             q_where = q_where.replace('AND', 'and').replace('OR', 'or')
-            q_where = q_where.replace('<>', '!=').replace('=', '==')
+            q_where = q_where.replace('=', '==').replace('<>', '!=')
             q_where = q_where.replace(';', '')
         else:
             q_where = None

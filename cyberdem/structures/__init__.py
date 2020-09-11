@@ -33,7 +33,7 @@ class Relationship():
 
     Given two CyberObjects A and B, where A administers B, the
     ``related_object_1`` would be the id of A and ``related_object_2`` would be
-    the ID of B, preserving the ordering of "A administers B". 
+    the ID of B, preserving the ordering of "A administers B".
 
     :param related_object_1: ID of a CyberObject
     :type related_object_1: UUIDv4 string, required
@@ -99,7 +99,7 @@ class Relationship():
                 f'"{value}" is not a valid value for related_object_1. Must be'
                 f' a UUIDv4 in string format')
         self._related_object_1 = value
-    
+
     @property
     def related_object_2(self):
         return self._related_object_2

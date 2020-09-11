@@ -38,13 +38,14 @@ def main():
     # Instantiate a known set of CyberObjects
     ap = Device(
         name="Access Point", description="Main access point", is_virtual=False,
-        network_interfaces=[("eth0", "10.10.30.40"),("eth1", "192.168.10.2")])
+        network_interfaces=[("eth0", "10.10.30.40"), ("eth1", "192.168.10.2")])
     fs.save(ap)
 
     firewall = Device(
         name="Firewall", description="Firewall", is_virtual=False,
-        network_interfaces=[("eth0", "192.168.10.3"), ("eth1", "192.168.10.4"),
-        ("eth2", "192.168.10.5")])
+        network_interfaces=[
+                ("eth0", "192.168.10.3"), ("eth1", "192.168.10.4"),
+                ("eth2", "192.168.10.5")])
     fs.save(firewall)
 
     mtu = Device(
@@ -83,7 +84,8 @@ def main():
     fs.save(cisco_ios)
 
     redhat = OperatingSystem(
-        nam='RedHat', description='RedHat OS', version='8', os_type='LinuxRedHat')
+        nam='RedHat', description='RedHat OS', version='8',
+        os_type='LinuxRedHat')
     fs.save(redhat)
 
     win_10 = OperatingSystem(
@@ -144,13 +146,28 @@ def main():
     fs.save(Relationship(win_10.id, hmi.id, relationship_type='ResidesOn'))
     fs.save(Relationship(firefox.id, hmi.id, relationship_type='ResidesOn'))
 
-    # @TODO Save the  events of a specific attack chain against the toy network
+    # Save the  events of a specific attack chain against the toy network
     # phishing attack via email targeting the SCADA administrator
     fs.save(PhishingAttack(
         message_type='Email', targets=[generic_admin.id],
         event_time=datetime(2020, 9, 18)))
+    # actor on the HMI ping scans the network block
+    scada_netblock = NetworkLink(mask="192.168.10.0/24")
+    fs.save(scada_netblock)
+    fs.save(CyberRecon(
+        recon_type="PingScan", event_time=datetime(2020, 9, 19),
+        targets=[scada_netblock.id], duration=timedelta(seconds=300),
+        source_ids=[hmi.id]))
+    # actor using the HMI installs a malicious file on the MTU
+    fs.save(Manipulate(
+        description="installation of malicious file",
+        event_time=datetime(2020, 9, 19), targets=[mtu.id],
+        source_ids=[hmi.id]))
+    fs.save(Manipulate(
+        description="malicious code changes readings on MTU",
+        event_time=datetime(2020, 9, 19), targets=[mtu.id], phase='Continue'))
 
-    # @TODO Query the file system
+    # Query the file system
     headers, resp = fs.query("SELECT * FROM Application")
     print(f'\nQUERY 1: SELECT * FROM Application\n--------\n{headers}')
     for line in resp:
@@ -158,7 +175,9 @@ def main():
 
     query2 = (
         "SELECT description,name FROM * "
-        "WHERE (name='My application' AND version='2.4') OR system_type='C3'")
+        "WHERE (is_logical=False AND physical_layer<>'Wired') OR "
+        "event_time<>'2020-09-18'")
+    # @TODO query2 is not currently returning what is expected
     headers, resp = fs.query(query2)
     print(f'\nQUERY 2\n--------\n{headers}')
     for line in resp:
