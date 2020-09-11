@@ -47,7 +47,36 @@ QUERY 1
 (None, '0eaacdbc-...', None, None, 'Application')
 (None, '6265eb88-...', None, None, 'Application')
 
-[expected output]
+QUERY 2
+--------
+['description', 'name']
+(None, None)
+...
+(None, None)
+(None, None)
+('PfSense Firewall', 'PfSense')
+(None, None)
+('Firefox browser', 'Firefox')
+('Rapid SCADA software', 'Rapid SCADA')
+...
+
+QUERY 3: SELECT id FROM Application,OperatingSystem WHERE name='PfSense' OR os_type='LinuxRedHat'
+--------
+['id']
+('19a6f4b3-89ce-4aa5-8a94-a065833a3a53',)
+('f177a5e0-f56a-4c11-b655-39e6c0cac873',)
+
+Updating app versions...
+Application(
+    id: 19a6f4b3-89ce-4aa5-8a94-a065833a3a53
+    name: PfSense
+    version: 2.5.0
+)
+OperatingSystem(
+    id: f177a5e0-f56a-4c11-b655-39e6c0cac873
+    os_type: LinuxRedHat
+    version: 8.0
+)
 ```
 You will see a folder called "test-fs" in the directory in which you ran the [example.py](example.py) script. This folder has subfolders containing each type of Cyber DEM object/event.
 
