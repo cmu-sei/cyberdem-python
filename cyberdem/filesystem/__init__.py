@@ -62,10 +62,7 @@ class FileSystem():
         """Creates a directory for storing CyberDEM objects and Events"""
 
         if not os.path.isdir(path):
-            print(f'Creating new FileSystem path {path}.')
             os.mkdir(path)
-        else:
-            print(f'Using existing FileSystem at {path}')
         self.path = path
         self._folders = []
         for folder in os.listdir(self.path):

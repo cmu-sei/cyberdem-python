@@ -49,6 +49,10 @@ class _CyberDEMBase():
     def __init__(self, id=None, **kwargs):
         if id is None:
             id = str(uuid.uuid4())
+        if len(kwargs) > 0:
+            raise ValueError(
+                f'Invalid attribute(s): '
+                f'{", ".join([k for k in kwargs.keys()])}')
         self.id = id
 
     @property
@@ -928,16 +932,16 @@ class System(_CyberObject):
 
 
 # Fourth level CyberDEM CyberObjects
-class OperatingSystem(_CyberObject):
+class OperatingSystem(Application):
     """Representation of a OperatingSystem object.
 
-    Inherits :class:`_CyberObject`.
+    Inherits :class:`Application`.
 
     :param os_type: Type of operating system
     :type os_type: value from the
         :class:`~cyberdem.enumerations.OperatingSystemType` enumeration,
         optional
-    :param kwargs: Arguments to pass to the :class:`_CyberObject` class
+    :param kwargs: Arguments to pass to the :class:`Application` class
     :type kwargs: dictionary, optional
 
     :Example:
@@ -945,7 +949,8 @@ class OperatingSystem(_CyberObject):
         >>> kwargs = {
         ...    'os_type': 'MicrosoftWindows',
         ...    'name': 'User machine',
-        ...    'description': 'For employees in foo department'
+        ...    'description': 'For employees in foo department',
+        ...    'version': '10'
         ... }
         >>> my_os = OperatingSystem(**kwargs)
     """
@@ -976,9 +981,10 @@ class Service(Application):
 
     Inherits :class:`Application`.
 
-    :param service_type: Type of service
-    :type os_type: value from the
+    :param service_type: value from the
         :class:`~cyberdem.enumerations.ServiceType` enumeration, optional
+    :type os_type: value from the
+        :class:`~cyberdem.enumerations.OperatingSystemType` enumeration, optional
     :param address:
     :type address: string, optional
     :param kwargs: Arguments to pass to the :class:`Application` class

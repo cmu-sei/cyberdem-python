@@ -38,7 +38,7 @@ def main():
     # Instantiate a known set of CyberObjects
     ap = Device(
         name="Access Point", description="Main access point", is_virtual=False,
-        network_interfaces=[("eth0", "10.10.30.40"), ("eth1", "192.168.10.2")])
+        network_interfaces=[("eth0", "10.10.30.40"), ("eth1", "192.168.10.2")], test='test')
     fs.save(ap)
 
     firewall = Device(
