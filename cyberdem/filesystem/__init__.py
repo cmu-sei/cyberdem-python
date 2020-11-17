@@ -177,6 +177,7 @@ class FileSystem():
                         with open(os.path.join(root, i) + '.json') as j_file:
                             obj = json.load(j_file)
                         j_file.close()
+            del obj['_type']
             found_objects.append(self.obj_types[obj_type](**obj))
         if len(found_objects) == 1:
             return found_objects[0]
