@@ -517,7 +517,7 @@ class Device(_CyberObject):
     :param device_identifier: [desc]
     :type device_identifier: string, optional
     :param network_interfaces: mapping of interface names to addresses
-    :type network_interfaces: list of tuples, optional
+    :type network_interfaces: list of lists, optional
     :param kwargs: Arguments to pass to the :class:`_CyberObject` class
     :type kwargs: dictionary, optional
 
@@ -531,7 +531,7 @@ class Device(_CyberObject):
         ...    'name': 'The Server',
         ...    'description': 'Generic server description'
         ...    }
-        >>> net_ints = [('eth0','204.105.24.23'), ('eth1','192.168.10.101')]
+        >>> net_ints = [['eth0','204.105.24.23'], ['eth1','192.168.10.101']]
         >>> my_device = Device(network_interfaces=net_ints, **kwargs)
     """
 
@@ -622,13 +622,13 @@ class Device(_CyberObject):
         if not isinstance(value, list):
             raise TypeError(
                 f'{type(value)} is not a valid type for network_interface.'
-                f'Must be a list of tuples. Ex. "[(\'eth0\', \'1.2.3.4\'), '
-                f'(...)]"')
+                f'Must be a list of tuples. Ex. "[[\'eth0\', \'1.2.3.4\'], '
+                f'[...]]"')
         for net_int in value:
-            if not isinstance(net_int, tuple):
+            if not isinstance(net_int, list):
                 raise TypeError(
-                    f'{type(net_int)} for {net_int} should be a tuple. Ex. '
-                    f'"(\'eth0\', \'1.2.3.4\')"')
+                    f'{type(net_int)} for {net_int} must be a list. Ex. '
+                    f'"[\'eth0\', \'1.2.3.4\']"')
         self._network_interfaces = value
 
     @network_interfaces.deleter
@@ -719,7 +719,7 @@ class NetworkLink(_CyberObject):
     :param jitter: variability in the latency, measured in milliseconds
     :type jitter: integer, optional
     :param network_interfaces: mapping of interface names to addresses
-    :type network_interfaces: list of tuples, optional
+    :type network_interfaces: list of lists, optional
     :param kwargs: Arguments to pass to the :class:`_CyberObject` class
     :type kwargs: dictionary, optional
 
@@ -733,7 +733,7 @@ class NetworkLink(_CyberObject):
         ...    'name': 'Link 10',
         ...    'description': 'User network link'
         ... }
-        >>> net_ints = [('eth1','192.168.10.100'), ('eth0','192.168.10.101')]
+        >>> net_ints = [['eth1','192.168.10.100'], ['eth0','192.168.10.101']]
         >>> my_link = NetworkLink(network_interfaces=net_ints, **kwargs)
     """
 
@@ -858,13 +858,13 @@ class NetworkLink(_CyberObject):
         if not isinstance(value, list):
             raise TypeError(
                 f'{type(value)} is not a valid type for network_interface.'
-                f'Must be a list of tuples. Ex. "[(\'eth0\', \'1.2.3.4\'), '
-                f'(...)]"')
+                f'Must be a list of lists. Ex. "[[\'eth0\', \'1.2.3.4\'], '
+                f'[...]]"')
         for net_int in value:
-            if not isinstance(net_int, tuple):
+            if not isinstance(net_int, list):
                 raise TypeError(
-                    f'{type(net_int)} for {net_int} should be a tuple. Ex. '
-                    f'"(\'eth0\', \'1.2.3.4\')"')
+                    f'{type(net_int)} for {net_int} must be a list. Ex. '
+                    f'"[\'eth0\', \'1.2.3.4\']"')
         self._network_interfaces = value
 
     @network_interfaces.deleter
