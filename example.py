@@ -38,24 +38,24 @@ def main():
     # Instantiate a known set of CyberObjects
     ap = Device(
         name="Access Point", description="Main access point", is_virtual=False,
-        network_interfaces=[("eth0", "10.10.30.40"), ("eth1", "192.168.10.2")], test='test')
+        network_interfaces=[["eth0", "10.10.30.40"], ["eth1", "192.168.10.2"]])
     fs.save(ap)
 
     firewall = Device(
         name="Firewall", description="Firewall", is_virtual=False,
         network_interfaces=[
-                ("eth0", "192.168.10.3"), ("eth1", "192.168.10.4"),
-                ("eth2", "192.168.10.5")])
+                ["eth0", "192.168.10.3"], ["eth1", "192.168.10.4"],
+                ["eth2", "192.168.10.5"]])
     fs.save(firewall)
 
     mtu = Device(
         name="MTU", description="Master Terminal Unit", is_virtual=False,
-        network_interfaces=[("eth0", "192.168.10.6")])
+        network_interfaces=[["eth0", "192.168.10.6"]])
     fs.save(mtu)
 
     hmi = Device(
         name="HMI", description="HMI Workstation", device_types=['HMI'],
-        is_virtual=False, network_interfaces=[("eth0", "192.168.10.7")])
+        is_virtual=False, network_interfaces=[["eth0", "192.168.10.7"]])
     fs.save(hmi)
 
     wan_ap = NetworkLink(
@@ -84,7 +84,7 @@ def main():
     fs.save(cisco_ios)
 
     redhat = OperatingSystem(
-        nam='RedHat', description='RedHat OS', version='8',
+        name='RedHat', description='RedHat OS', version='8',
         os_type='LinuxRedHat')
     fs.save(redhat)
 
@@ -152,7 +152,7 @@ def main():
         message_type='Email', targets=[generic_admin.id],
         event_time=datetime(2020, 9, 18)))
     # actor on the HMI ping scans the network block
-    scada_netblock = NetworkLink(mask="192.168.10.0/24")
+    scada_netblock = NetworkLink(network_interfaces=[["etho", "192.168.10.0"]])
     fs.save(scada_netblock)
     fs.save(CyberRecon(
         recon_type="PingScan", event_time=datetime(2020, 9, 19),

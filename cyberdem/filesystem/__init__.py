@@ -113,36 +113,21 @@ class FileSystem():
                 json.dump(serialized, outfile, indent=4)
             outfile.close()
 
-    def get(self, ids, obj_type=None):
-        """Get an object or list of objects by ID
+    def get(self, id, obj_type=None):
+        """Get an object by ID
 
-        :param ids: UUID(s) of object(s) to retrieve
-        :type ids: string or list of strings, required
-        :param obj_type: CyberDEM type of the id(s). Ex. "Application"
+        :param id: UUID(s) of object to retrieve
+        :type id: string, required
+        :param obj_type: CyberDEM type of the id. Ex. "Application"
         :type obj_type: string, optional
 
-        :return: instance(s) of the requested object(s)
-        :rtype: object or list of objects, or ``None`` if no matching IDs are
-            found
+        :return: instance of the requested object
+        :rtype: cyberdem instance
 
         :Example:
             >>> my_object = fs.get("82ca4ed1-a053-4fc1-b1cc-f4b58b4dbf8c",\
                 "Application")
             >>> str(my_object)
-            Application(
-                id: 82ca4ed1-a053-4fc1-b1cc-f4b58b4dbf8c
-            )
-            >>> my_objects = fs.get(["46545b7a-1840-4e34-a26f-aef5eb954b25",\
-                "82ca4ed1-a053-4fc1-b1cc-f4b58b4dbf8c"])
-            >>> for obj in my_obects:
-            ... print(obj)
-            Service(
-                name='httpd',
-                description='Apache web server',
-                version='2.4.20',
-                service_type='WebService',
-                address='192.168.100.40'
-            )
             Application(
                 id: 82ca4ed1-a053-4fc1-b1cc-f4b58b4dbf8c
             )
@@ -158,33 +143,27 @@ class FileSystem():
         else:
             filepath = self.path
 
-        if not isinstance(ids, list):
-            ids = [ids]  # if only one id is given, convert to list
+        if not isinstance(id, str):
+            raise Exception(
+                f'id of type "{type(id)}" is not allowed. Must be a string.')
 
-        found_objects = []
-        for i in ids:
-            if obj_type:
-                # if the object type was specified the search is quicker
-                if os.path.isfile(os.path.join(filepath, i) + '.json'):
-                    with open(os.path.join(filepath, i) + '.json') as j_file:
+        if obj_type:
+            # if the object type was specified the search is quicker
+            if os.path.isfile(os.path.join(filepath, id) + '.json'):
+                with open(os.path.join(filepath, id) + '.json') as j_file:
+                    obj = json.load(j_file)
+                j_file.close()
+        else:
+            # otherwise, you have to search through the whole directory
+            for root, _, files in os.walk(filepath):
+                if id+'.json' in files:
+                    obj_type = os.path.split(root)[1]
+                    with open(os.path.join(root, id) + '.json') as j_file:
                         obj = json.load(j_file)
                     j_file.close()
-            else:
-                # otherwise, you have to search through the whole directory
-                for root, _, files in os.walk(filepath):
-                    if i+'.json' in files:
-                        obj_type = os.path.split(root)[1]
-                        with open(os.path.join(root, i) + '.json') as j_file:
-                            obj = json.load(j_file)
-                        j_file.close()
-            del obj['_type']
-            found_objects.append(self.obj_types[obj_type](**obj))
-        if len(found_objects) == 1:
-            return found_objects[0]
-        elif len(found_objects) == 0:
-            return None
-        else:
-            return found_objects
+        del obj['_type']
+        
+        return self.obj_types[obj_type](**obj)
 
     def query(self, query_string):
         """Search the FileSystem for a specific object or objects

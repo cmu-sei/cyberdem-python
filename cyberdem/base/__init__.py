@@ -622,7 +622,7 @@ class Device(_CyberObject):
         if not isinstance(value, list):
             raise TypeError(
                 f'{type(value)} is not a valid type for network_interface.'
-                f'Must be a list of tuples. Ex. "[[\'eth0\', \'1.2.3.4\'], '
+                f'Must be a list of lists. Ex. "[[\'eth0\', \'1.2.3.4\'], '
                 f'[...]]"')
         for net_int in value:
             if not isinstance(net_int, list):
