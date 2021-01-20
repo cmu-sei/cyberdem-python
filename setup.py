@@ -7,14 +7,15 @@ LICENSE = (HERE / "LICENSE.md").read_text(encoding="utf8")
 
 setup(
     name="cyberdem",
-    version="0.0.2",
+    version="0.0.3",
     description="CyberDEM SISO standard python helper package",
-    long_description=README,
-    long_description_content_type="text/markdown",
+    #long_description=README,
+    #long_description_content_type="text/markdown",
     license=LICENSE,
     classifiers=[
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
     ],
     packages=find_packages(),
 )

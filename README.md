@@ -15,6 +15,7 @@ These instructions will help you install a copy of the package on your local mac
 
 1. Download CyberDEM Python and unzip the download folder
 2. From within the top-level cyberdem folder (where [setup.py](setup.py) is located) run
+
 ```
 $ pip3 install .
 ```
@@ -78,6 +79,7 @@ OperatingSystem(
     version: 8.0
 )
 ```
+
 You will see a folder called "test-fs" in the directory in which you ran the [example.py](example.py) script. This folder has subfolders containing each type of Cyber DEM object/event.
 
 ### Documentation
