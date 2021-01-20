@@ -11,7 +11,13 @@ CyberDEM Python is based on the CyberDEM standard that is currently in DRAFT for
 
 These instructions will help you install a copy of the package on your local machine.
 
-### Installing
+### Install with pip
+
+```
+$ pip3 install cyberdem
+```
+
+### Installing from source
 
 1. Download CyberDEM Python and unzip the download folder
 2. From within the top-level cyberdem folder (where [setup.py](setup.py) is located) run
