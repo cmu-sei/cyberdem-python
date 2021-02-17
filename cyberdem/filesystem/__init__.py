@@ -25,7 +25,6 @@ DM20-0711
 
 
 from cyberdem import base
-from cyberdem.structures import Relationship
 import inspect
 import json
 import os
@@ -52,7 +51,7 @@ class FileSystem():
 
     # find the types of objects allowed from the base module and map the "type"
     # attribute to the class method
-    obj_types = {'Relationship': Relationship}
+    obj_types = {}
     for name, test_obj in inspect.getmembers(base, inspect.isclass):
         if test_obj.__module__ == 'cyberdem.base':
             if test_obj._type:
@@ -313,3 +312,45 @@ class FileSystem():
             raise Exception(
                 f'The folder_name "{folder_name}" does not match '
                 f'the base classes for CyberDEM.')
+
+    def save_flatfile(self, output_path=None, ignore=[]):
+        """Saves objects and actions in the filesystem to one flat json file.
+
+        :param output_path: location and path to save the flat file (ex.
+            'results\\cd_output.json')
+        :type output_path: string, optional (defaults to filesystem path)
+        :param ignore: list of CyberDEM objects or actions (as strings) not to
+            indclude in the file
+        :type ignore: list of strings, optional
+
+        :Example:
+            >>> fs.save_flatfile(ignore=['Application'])
+        """
+
+        # Check for bad input
+        if not isinstance(ignore, list):
+            raise TypeError("\"ignore\" must be a list of CyberDEM objects")
+        for obj_type in ignore:
+            if obj_type not in self.obj_types:
+                raise ValueError(
+                    f"{obj_type} in 'ignore' is not a CyberDEM object or "
+                    f"action")
+
+        # iterate through all folder in the file path and add objects to data
+        data = {} 
+        for folder in os.listdir(self.path):
+            if folder in ignore:
+                continue
+            data[folder] = []
+            for datafile in os.listdir(os.path.join(self.path, folder)):
+                with open(os.path.join(self.path, folder, datafile)) as j_file:
+                    data_object = json.load(j_file)
+                j_file.close()
+                data[folder].append(data_object)
+        if output_path:
+            path = output_path
+        else:
+            path = os.path.join(self.path, 'cyberdem_data.json')
+        with open(path, 'w') as f:
+            json.dump(data, f)
+        f.close()
