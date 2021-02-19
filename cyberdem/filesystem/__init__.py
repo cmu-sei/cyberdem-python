@@ -68,6 +68,51 @@ class FileSystem():
             if os.path.isdir(os.path.join(self.path, folder)):
                 self._folders.append(folder)
 
+    def _create_folder(self, folder_name):
+        """Creates a sub-folder in the FileSystem path
+
+        :param folder_name: should match one of the CyberDEM base classes
+        :type folder_name: string, required
+        """
+
+        # sub-folders should match the public classes in the base module
+        if folder_name in self.obj_types:
+            os.mkdir(self.path + '/' + folder_name)
+            self._folders.append(folder_name)
+        else:
+            raise Exception(
+                f'The folder_name "{folder_name}" does not match '
+                f'the base classes for CyberDEM.')
+
+    def load_flatfile(self, filename):
+        """Loads CyberDEM objects and actions from a flat json file into the 
+            FileSystem
+        
+        :param filename: the json file load
+        :type filename: string, required
+
+        :Example:
+            >>> fs = FileSystem('./test-fs')
+            >>> fs.load_flatfile('cyberdem_input.json')
+        """
+
+        with open(filename, 'r') as j_file:
+            data = json.load(j_file)
+        j_file.close()
+
+        # Check the data first
+        for obj_type in data:
+            # Each of the primary keys should be a CyberDEM base class
+            if obj_type not in self.obj_types:
+                raise ValueError(
+                    f"{obj_type} is not a CyberDEM object or action")
+        
+        for obj_type in data:
+            for data_obj in data[obj_type]:
+                del data_obj['_type']
+                obj = self.obj_types[obj_type](**data_obj)
+                self.save(obj)
+
     def save(self, objects, overwrite=False):
         """Save CyberDEM objects and events to the FileSystem as json files
 
@@ -297,22 +342,6 @@ class FileSystem():
 
         return get_attrs, selected
 
-    def _create_folder(self, folder_name):
-        """Creates a sub-folder in the FileSystem path
-
-        :param folder_name: should match one of the CyberDEM base classes
-        :type folder_name: string, required
-        """
-
-        # sub-folders should match the public classes in the base module
-        if folder_name in self.obj_types:
-            os.mkdir(self.path + '/' + folder_name)
-            self._folders.append(folder_name)
-        else:
-            raise Exception(
-                f'The folder_name "{folder_name}" does not match '
-                f'the base classes for CyberDEM.')
-
     def save_flatfile(self, output_path=None, ignore=[]):
         """Saves objects and actions in the filesystem to one flat json file.
 
@@ -324,6 +353,7 @@ class FileSystem():
         :type ignore: list of strings, optional
 
         :Example:
+            >>> fs = FileSystem('./test-fs')
             >>> fs.save_flatfile(ignore=['Application'])
         """
 

@@ -37,7 +37,7 @@ System(
 )
 ```
 
-You may also try running the example.py file downloaded with the zip file.
+You may also try running the example.py file downloaded with the zip file in [examples/scripts](examples/scripts).
 
 ```
 $ python3 example.py

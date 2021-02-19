@@ -156,7 +156,7 @@ class DeviceType(_CyberDEMEnumeration):
             options.
         """
         if not isinstance(value, list):
-            raise ValueError(f'"types" should be a list of DeviceTypes')
+            raise ValueError(f'"device_types" should be a list of DeviceTypes')
         for t in value:
             if t.lower() not in [o.lower() for o in self._opts]:
                 raise ValueError(f'"{t}" is not a valid value for DeviceType')
