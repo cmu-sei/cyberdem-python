@@ -1,5 +1,5 @@
 """
-Object/Event classes for CyberDEM
+Various helpful functions for using CyberDEM
 
 CyberDEM Python
 
@@ -289,3 +289,107 @@ def generate_network(
     # TODO add Software (Applications)
 
     # TODO add Data
+
+def network_summary(
+        filesystem, count_only=False, top_N=None, ignore=[], pprint=False):
+    """A summary count of CyberObjects in the FileSystem
+    
+    :param filesystem: where the CyberObjects are stored
+    :type filesystem: :class:`~cyberdem.filesystem.FileSystem`, required
+    :param count_only: if true, provides only a high level count of CyberObjects
+    :type count_only: boolean, optional (default=false)
+    :param top_N: only show the top N results of each object type/name
+    :type top_N: integer, optional
+    :param ignore: don't include specified CyberObject types
+    :type ignore: list, optional
+    :param pprint: line and tab delimited print out for quick command line
+        reading
+    :type pprint: boolean, optional (default=false)
+
+    :Example:
+        >>> from cyberdem.widgets import network_summary
+        >>> from cyberdem.filesystem import FileSystem
+        >>> fs = FileSystem('./test-fs')
+        >>> summary = network_summary(fs, top_N=5, pprint=True)
+        >>> print(summary)
+    """
+
+    counts = {
+        'Applications': 'Application',
+        'Data': 'Data',
+        'Devices': 'Device',
+        'Networks': 'Network',
+        'Network Links': 'NetworkLink',
+        'Operating systems': 'OperatingSystem',
+        'Personas': 'Persona',
+        'Systems': 'System',
+        'Services': 'Service'
+        }
+    type_breakdown = {
+        'Networks': ',mask',
+        'Network Links': '',
+        'Devices': ',device_type',
+        'Services': ',service_type',
+        'Operating systems': ',os_type',
+        'Applications': ',name',
+        'Personas': '',
+        'Data': ',data_type',
+        'Systems': ',system_type'
+        }
+
+    # Check the ignore variable
+    for var in ignore:
+        if var not in filesystem.obj_types:
+            raise ValueError('ERROR!!!')
+        else:
+            counts_key = [k for k in counts if counts[k] == var][0]
+            del counts[counts_key]
+            del type_breakdown[counts_key]
+
+    for obj in counts:
+        query = f"SELECT id{type_breakdown[obj]} FROM {counts[obj]}"
+        _, results = filesystem.query(query)
+        counts[obj] = len(results)
+        type_breakdown[obj] = {}
+        for r in results:
+            try:
+                obj_type = r[1]
+            except IndexError:
+                obj_type = None
+            if obj_type is not None:
+                try:
+                    type_breakdown[obj][obj_type] += 1
+                except KeyError:
+                    type_breakdown[obj][obj_type] = 1
+
+    if count_only:
+        data = {'Counts': counts}
+    else:
+        for t in type_breakdown:
+            type_breakdown[t] = sorted(
+                type_breakdown[t].items(), key = lambda kv:(-kv[1], kv[0]))
+            if top_N is not None:
+                allowed = sorted(set(
+                    [v[1] for v in type_breakdown[t]]), reverse=True)[:top_N]
+                tb = [(k, v) for k, v in type_breakdown[t] if v in allowed]
+                type_breakdown[t] = tb
+        data = {
+            'Counts': counts,
+            'Type Summary': type_breakdown}
+
+    if pprint:
+        pretty = ''
+        for k in data:
+            pretty += k.upper() + '\n'
+            for obj_type in data[k]:
+                if isinstance(data[k][obj_type], int):
+                    pretty += f'\t{obj_type}: {data[k][obj_type]}\n'
+                else:
+                    if len(data[k][obj_type]) == 0:
+                        continue
+                    pretty += f'\t{obj_type}:\n'
+                    for sub_obj in data[k][obj_type]:
+                        pretty += f'\t\t{sub_obj[0]}: {sub_obj[1]}\n'
+        data = pretty
+
+    return data
