@@ -25,6 +25,7 @@ DM20-0711
 
 
 from cyberdem import base
+from itertools import combinations
 import inspect
 import json
 import os
@@ -160,7 +161,7 @@ class FileSystem():
     def get(self, id, obj_type=None):
         """Get an object by ID
 
-        :param id: UUID(s) of object to retrieve
+        :param id: UUID of object to retrieve
         :type id: string, required
         :param obj_type: CyberDEM type of the id. Ex. "Application"
         :type obj_type: string, optional
@@ -269,7 +270,9 @@ class FileSystem():
                     raise Exception(
                         f'obj_type "{obj_type}" is not an allowed '
                         f'CyberDEM base type. must be in {self.obj_types}"')
-                paths.append(os.path.join(self.path, obj_type))
+                # if objects of that type exist in the filesystem
+                if obj_type in os.listdir(self.path):
+                    paths.append(os.path.join(self.path, obj_type))
 
         # if the SELECT is *, find all possible class attributes to include
         if q_select == "*":
@@ -342,6 +345,46 @@ class FileSystem():
 
         return get_attrs, selected
 
+    def save_networkgraph_data(self, nodes='Device', links='NetworkLinks', output_path=None):
+        # Check inputs
+        if nodes not in self.obj_types:
+            raise TypeError(f"{nodes} is not a CyberDEM Object or Action")
+        if links not in self.obj_types:
+            raise TypeError(f"{links} is not a CyberDEM Object or Action")
+    
+        # Get the data and put in a d3.js format
+        data = {"nodes": [], "links": []}
+        _, resp = self.query('SELECT id FROM ' + nodes)
+        for node in resp:
+            data_object = self.get(node[0], nodes)
+            info = {'id': data_object.id, 'name': data_object.name}
+            data['nodes'].append(info)
+
+        _, resp = self.query('SELECT id FROM '+ links)
+        link_ids = [i[0] for i in resp]
+
+        _, resp = self.query(
+            'SELECT related_object_1,related_object_2 FROM Relationship')
+        for link in link_ids:
+            related = []
+            for rel in resp:
+                if rel[0] == link:
+                    related.append(rel[1])
+                if rel[1] == link:
+                    related.append(rel[0])
+            comb = combinations(related, 2)
+            for c in comb:
+                data['links'].append({'source':c[0],'target':c[1]})
+
+        # Save to file    
+        if output_path:
+            path = output_path
+        else:
+            path = os.path.join(self.path, 'd3js_data.json')
+        with open(path, 'w') as f:
+            json.dump(data, f)
+        f.close()
+
     def save_flatfile(self, output_path=None, ignore=[]):
         """Saves objects and actions in the filesystem to one flat json file.
 
@@ -366,7 +409,7 @@ class FileSystem():
                     f"{obj_type} in 'ignore' is not a CyberDEM object or "
                     f"action")
 
-        # iterate through all folder in the file path and add objects to data
+        # iterate through all folders in the file path and add objects to data
         data = {} 
         for folder in os.listdir(self.path):
             if folder in ignore:
