@@ -371,7 +371,7 @@ def network_summary(
             if top_N is not None:
                 allowed = sorted(set(
                     [v[1] for v in type_breakdown[t]]), reverse=True)[:top_N]
-                tb = [(k, v) for k, v in type_breakdown[t] if v in allowed]
+                tb = [[k, v] for k, v in type_breakdown[t] if v in allowed]
                 type_breakdown[t] = tb
         data = {
             'Counts': counts,
