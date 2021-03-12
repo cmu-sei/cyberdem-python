@@ -322,8 +322,8 @@ def network_summary(
         'Network Links': 'NetworkLink',
         'Operating systems': 'OperatingSystem',
         'Personas': 'Persona',
-        'Systems': 'System',
-        'Services': 'Service'
+        'Services': 'Service',
+        'Systems': 'System'
         }
     type_breakdown = {
         'Networks': ',mask',
