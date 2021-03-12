@@ -367,12 +367,18 @@ def network_summary(
     else:
         for t in type_breakdown:
             type_breakdown[t] = sorted(
-                type_breakdown[t].items(), key = lambda kv:(-kv[1], kv[0]))
+                type_breakdown[t].items(), key = lambda kv:[-kv[1], kv[0]])
             if top_N is not None:
                 allowed = sorted(set(
                     [v[1] for v in type_breakdown[t]]), reverse=True)[:top_N]
                 tb = [[k, v] for k, v in type_breakdown[t] if v in allowed]
                 type_breakdown[t] = tb
+            else:
+                # convert tuples from sort to lists (json fail)
+                list_of_lists = []
+                for tb in type_breakdown[t]:
+                    list_of_lists.append(list(tb))
+                type_breakdown[t] = list_of_lists
         data = {
             'Counts': counts,
             'Type Summary': type_breakdown}
