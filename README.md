@@ -1,11 +1,11 @@
-# Cyber Data Exchange Model (CyberDEM) Python Package
+# Cyber Data Exchange Model (Cyber DEM) Python Package
 
 ## Overview
-CyberDEM Python provides a Python API for the [Cyber Data Exchange Model](https://www.sisostds.org/StandardsActivities/DevelopmentGroups/CyberDEMPDG.aspx) (CyberDEM). CyberDEM Python provides methods to instantiate CyberDEM objects and events, serialize and deserialize objects and events, and manipulate instantiated objects. It also provides basic searching and file management methods. 
+Cyber DEM Python provides a Python API for the [Cyber Data Exchange Model](https://www.sisostds.org/StandardsActivities/DevelopmentGroups/CyberDEMPDG.aspx) (Cyber DEM). Cyber DEM Python provides methods to instantiate Cyber DEM objects and events, serialize and deserialize objects and events, and manipulate instantiated objects. It also provides basic searching and file management methods. 
 
 ## Status
 
-CyberDEM Python is based on the CyberDEM standard that is currently in DRAFT format, and therefore subject to change. 
+Cyber DEM Python is based on the Cyber DEM standard that is currently in DRAFT format, and therefore subject to change. 
 
 ## Getting Started
 
@@ -19,7 +19,7 @@ $ pip3 install cyberdem
 
 ### Installing from source
 
-1. Download CyberDEM Python and unzip the download folder
+1. Download Cyber DEM Python and unzip the download folder
 2. From within the top-level cyberdem folder (where [setup.py](setup.py) is located) run
 
 ```
