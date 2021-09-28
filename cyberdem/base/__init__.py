@@ -27,6 +27,8 @@ DM20-0711
 from datetime import datetime, timedelta
 from cyberdem.enumerations import *
 import uuid
+import inspect
+import sys
 
 
 class _CyberDEMBase():
@@ -93,7 +95,7 @@ class _CyberDEMBase():
         return serialized
 
 
-def load(instance_dict):
+def load_cyberdem_object(instance_dict):
     """Given a dictionary representing a Cyber DEM object or event, return an
         instance of that object/event.
 
@@ -101,15 +103,17 @@ def load(instance_dict):
     :type instance_dict: dict, required
 
     :Example:
-        >>> foo = {"type": "Application", "name": "foo", "description": "bar"}
-        >>> bar = base.load(foo)
+        >>> from cyberdem import base
+        >>> foo = {"_type": "Application", "name": "foo", "description": "bar"}
+        >>> bar = base.load_cyberdem_object(foo)
         >>> type(bar)
-        <class 'Application'>
+        <class 'cyberdem.base.Application'>
     """
 
     # Get all of the classes into a dictionary so they can be called
     obj_types = {}
-    for _, test_obj in _CyberDEMBase.__subclasses__():
+    for _, test_obj in inspect.getmembers(
+            sys.modules[__name__], inspect.isclass):
         if test_obj.__module__ == 'cyberdem.base':
             if test_obj._type:
                 obj_types[test_obj._type] = test_obj
