@@ -90,16 +90,17 @@ class DataLinkProtocolType(_CyberDEMEnumeration):
 class DataStatus(_CyberDEMEnumeration):
     """CyberDEM DataStatus enumeration
 
-    :options: 'Corrupted', 'Erased', 'Manipulated', 'NonDecryptable',
-        'Uncompromised'
+    :options: 'Compromised', 'Corrupted', 'Erased', 'Intact', 'Manipulated',
+        'NonDecryptable'
     """
 
     _opts = [
+        'Compromised',
         'Corrupted',
         'Erased',
+        'Intact',
         'Manipulated',
-        'NonDecryptable',
-        'Uncompromised'
+        'NonDecryptable'
     ]
 
 
@@ -121,7 +122,7 @@ class DeviceType(_CyberDEMEnumeration):
 
     :options: 'Communications', 'ComputerNode', 'Controller', 'Generic', 'HMI',
         'IoT', 'Monitoring', 'Networking', 'PortableComputer', 'Printer',
-        'Scanner', 'Sensor', 'StorageDevice'
+        'Scanner', 'Security', 'Sensor', 'Storage'
     """
 
     _opts = [
@@ -136,8 +137,9 @@ class DeviceType(_CyberDEMEnumeration):
         'PortableComputer',
         'Printer',
         'Scanner',
+        'Security',
         'Sensor',
-        'StorageDevice'
+        'Storage'
     ]
 
     def _check_prop(self, value):
@@ -314,36 +316,34 @@ class PhysicalLayerType(_CyberDEMEnumeration):
 class ReconType(_CyberDEMEnumeration):
     """CyberDEM ReconType enumeration
 
-    :options: 'AccountEnumeration', 'ARPScan', 'DeviceEnumeration',
-        'DNSEnumeration', 'DomainEnumeration', 'LDAPScan', 'NetBiosScan',
-        'NetworkMap', 'NTPEnumeration', 'OSScan', 'Ping', 'PingScan',
-        'PortScan', 'PortSweep', 'ServiceEnumeration', 'SMTPEnumeration',
-        'SNMPSweep', 'TraceRoute', 'UNIX-LinuxEnumeration',
-        'VulnerabilityEnumeration', 'WindowsEnumeration'
+    :options: 'Account', 'ARPScan', 'Device', 'DNS', 'Domain', 'LDAPScan',
+        'NetBiosScan', 'NetworkMap', 'NTP', 'OSScan', 'Ping', 'PingScan',
+        'PortScan', 'PortSweep', 'Service', 'SMTP', 'SNMPSweep', 'TraceRoute',
+        'UNIX-Linux', 'Vulnerability', 'Windows'
     """
 
     _opts = [
-        'AccountEnumeration',
+        'Account',
         'ARPScan',
-        'DeviceEnumeration',
-        'DNSEnumeration',
-        'DomainEnumeration',
+        'Device',
+        'DNS',
+        'Domain',
         'LDAPScan',
         'NetBiosScan',
         'NetworkMap',
-        'NTPEnumeration',
+        'NTP',
         'OSScan',
         'Ping',
         'PingScan',
         'PortScan',
         'PortSweep',
-        'ServiceEnumeration',
-        'SMTPEnumeration',
+        'Service',
+        'SMTP',
         'SNMPSweep',
         'TraceRoute',
-        'UNIX-LinuxEnumeration',
-        'VulnerabilityEnumeration',
-        'WindowsEnumeration'
+        'UNIX-Linux',
+        'Vulnerability',
+        'Windows'
     ]
 
 
