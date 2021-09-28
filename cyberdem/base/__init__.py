@@ -1,7 +1,7 @@
 """
-Object/Event classes for CyberDEM
+Object/Event classes for Cyber DEM
 
-CyberDEM Python
+Cyber DEM Python
 
 Copyright 2020 Carnegie Mellon University.
 
@@ -24,16 +24,13 @@ DM20-0711
 """
 
 
-from collections import OrderedDict
 from datetime import datetime, timedelta
 from cyberdem.enumerations import *
-import inspect
-import sys
 import uuid
 
 
 class _CyberDEMBase():
-    """Superclass for all CyberDEM Objects and Events
+    """Superclass for all Cyber DEM Objects and Events
 
     Will create an appropriate ``id`` if one is not given.
 
@@ -96,7 +93,35 @@ class _CyberDEMBase():
         return serialized
 
 
-# Second level CyberDEM objects
+def load(instance_dict):
+    """Given a dictionary representing a Cyber DEM object or event, return an
+        instance of that object/event.
+
+    :param instance_dict: representation of a Cyber DEM object or event
+    :type instance_dict: dict, required
+
+    :Example:
+        >>> foo = {"type": "Application", "name": "foo", "description": "bar"}
+        >>> bar = base.load(foo)
+        >>> type(bar)
+        <class 'Application'>
+    """
+
+    # Get all of the classes into a dictionary so they can be called
+    obj_types = {}
+    for _, test_obj in _CyberDEMBase.__subclasses__():
+        if test_obj.__module__ == 'cyberdem.base':
+            if test_obj._type:
+                obj_types[test_obj._type] = test_obj
+
+    obj_type = instance_dict['_type']
+    del instance_dict['_type']
+    obj = obj_types[obj_type](**instance_dict)  # instantiate the object
+
+    return obj
+
+
+# Second level Cyber DEM objects
 class _CyberObject(_CyberDEMBase):
     """Superclass for all CyberDEM CyberObjects
 
@@ -323,9 +348,9 @@ class _CyberEvent(_CyberDEMBase):
         del self._source_ids
 
 
-# Third level CyberDEM CyberEvents
+# Third level Cyber DEM CyberEvents
 class _CyberEffect(_CyberEvent):
-    """Passive superclass for all CyberDEM CyberEffects.
+    """Passive superclass for all Cyber DEM CyberEffects.
 
     Inherits :class:`_CyberEvent`. No additional attributes.
     """
@@ -334,16 +359,16 @@ class _CyberEffect(_CyberEvent):
 
 
 class _CyberAction(_CyberEvent):
-    """Passive superclass for all CyberDEM CyberActions.
+    """Passive superclass for all Cyber DEM CyberActions.
 
-    Inherits :class:`_CyberEvent`. Included for completeness of the CyberDEM
+    Inherits :class:`_CyberEvent`. Included for completeness of the Cyber DEM
     standard.
     """
 
     pass
 
 
-# Third level CyberDEM CyberObjects
+# Third level Cyber DEM CyberObjects
 class Application(_CyberObject):
     """Representation of an Application object.
 
@@ -712,7 +737,7 @@ class NetworkLink(_CyberObject):
     :type data_link_protocol: value from the
         :class:`~cyberdem.enumerations.DataLinkProtocolType` enumeration,
         optional
-    :param bandwidth: Max data transfer rate of the link in Gb
+    :param bandwidth: Max data transfer rate of the link in bps
     :type bandwidth: integer, optional
     :param latency: network link latency in milliseconds
     :type latency: integer, optional
@@ -931,7 +956,7 @@ class System(_CyberObject):
         del self._system_type
 
 
-# Fourth level CyberDEM CyberObjects
+# Fourth level Cyber DEM CyberObjects
 class OperatingSystem(Application):
     """Representation of a OperatingSystem object.
 
@@ -1040,7 +1065,7 @@ class Service(Application):
         del self._address
 
 
-# Fourth level CyberDEM CyberEvents
+# Fourth level Cyber DEM CyberEvents
 class CyberAttack(_CyberAction):
     """Representation of a CyberAttack object.
 
@@ -1257,7 +1282,7 @@ class Manipulate(_CyberEffect):
         del self._description
 
 
-# Fifth level CyberDEM CyberEvents
+# Fifth level Cyber DEM CyberEvents
 class DataExfiltration(CyberAttack):
     """
     Data exfiltration is the unauthorized copying, transfer or retrieval of
@@ -1637,7 +1662,7 @@ class PhishingAttack(CyberAttack):
         del self._body
 
 
-# Sixth level CyberDEM CyberEvents --> CyberEffects
+# Sixth level Cyber DEM CyberEvents --> CyberEffects
 class BlockTrafficEffect(Disrupt):
     """
     Completely block all traffic over a communication channel.
