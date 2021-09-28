@@ -1,7 +1,7 @@
 """
-CyberDEM FileSystem Module
+Cyber DEM FileSystem Module
 
-CyberDEM Python
+Cyber DEM Python
 
 Copyright 2020 Carnegie Mellon University.
 
@@ -38,7 +38,7 @@ class FileSystem():
     Creates file storage, retrieval, and query methods for storing and
     retrieving CyberObjects, CyberEvents, and Relationships.
 
-    :param path: directory path to store CyberDEM json files; can be existing
+    :param path: directory path to store Cyber DEM json files; can be existing
         directory or non-existing
     :type path: string, required
 
@@ -59,7 +59,7 @@ class FileSystem():
                 obj_types[test_obj._type] = test_obj
 
     def __init__(self, path):
-        """Creates a directory for storing CyberDEM objects and Events"""
+        """Creates a directory for storing Cyber DEM objects and Events"""
 
         if not os.path.isdir(path):
             os.mkdir(path)
@@ -72,7 +72,7 @@ class FileSystem():
     def _create_folder(self, folder_name):
         """Creates a sub-folder in the FileSystem path
 
-        :param folder_name: should match one of the CyberDEM base classes
+        :param folder_name: should match one of the Cyber DEM base classes
         :type folder_name: string, required
         """
 
@@ -83,12 +83,12 @@ class FileSystem():
         else:
             raise Exception(
                 f'The folder_name "{folder_name}" does not match '
-                f'the base classes for CyberDEM.')
+                f'the base classes for Cyber DEM.')
 
     def load_flatfile(self, filename):
-        """Loads CyberDEM objects and actions from a flat json file into the 
+        """Loads Cyber DEM objects and actions from a flat json file into the 
             FileSystem
-        
+
         :param filename: the json file load
         :type filename: string, required
 
@@ -103,11 +103,11 @@ class FileSystem():
 
         # Check the data first
         for obj_type in data:
-            # Each of the primary keys should be a CyberDEM base class
+            # Each of the primary keys should be a Cyber DEM base class
             if obj_type not in self.obj_types:
                 raise ValueError(
-                    f"{obj_type} is not a CyberDEM object or action")
-        
+                    f"{obj_type} is not a Cyber DEM object or action")
+
         for obj_type in data:
             for data_obj in data[obj_type]:
                 del data_obj['_type']
@@ -115,11 +115,11 @@ class FileSystem():
                 self.save(obj)
 
     def save(self, objects, overwrite=False):
-        """Save CyberDEM objects and events to the FileSystem as json files
+        """Save Cyber DEM objects and events to the FileSystem as json files
 
-        :param objects: CyberDEM object or event instance (or list of
+        :param objects: Cyber DEM object or event instance (or list of
             instances)
-        :type objects: CyberDEM class instance from :py:mod:`base`, or a list
+        :type objects: Cyber DEM class instance from :py:mod:`base`, or a list
             of objects
         :param overwrite: allow object with the same ID as one already in the
             FileSystem to overwrite the existing file, defaults to False
@@ -163,7 +163,7 @@ class FileSystem():
 
         :param id: UUID of object to retrieve
         :type id: string, required
-        :param obj_type: CyberDEM type of the id. Ex. "Application"
+        :param obj_type: Cyber DEM type of the id. Ex. "Application"
         :type obj_type: string, optional
 
         :return: instance of the requested object
@@ -183,7 +183,7 @@ class FileSystem():
             if obj_type not in self.obj_types:
                 raise Exception(
                     f'obj_type "{obj_type}" is not an allowed '
-                    f'CyberDEM base type. must be in {self.obj_types}"')
+                    f'Cyber DEM base type. must be in {self.obj_types}"')
             filepath = os.path.join(self.path, obj_type)
         else:
             filepath = self.path
@@ -269,7 +269,7 @@ class FileSystem():
                 if obj_type not in self.obj_types:
                     raise Exception(
                         f'obj_type "{obj_type}" is not an allowed '
-                        f'CyberDEM base type. must be in {self.obj_types}"')
+                        f'Cyber DEM base type. must be in {self.obj_types}"')
                 # if objects of that type exist in the filesystem
                 if obj_type in os.listdir(self.path):
                     paths.append(os.path.join(self.path, obj_type))
@@ -348,9 +348,9 @@ class FileSystem():
     def save_networkgraph_data(self, nodes='Device', links='NetworkLinks', output_path=None):
         # Check inputs
         if nodes not in self.obj_types:
-            raise TypeError(f"{nodes} is not a CyberDEM Object or Action")
+            raise TypeError(f"{nodes} is not a Cyber DEM Object or Action")
         if links not in self.obj_types:
-            raise TypeError(f"{links} is not a CyberDEM Object or Action")
+            raise TypeError(f"{links} is not a Cyber DEM Object or Action")
     
         # Get the data and put in a d3.js format
         data = {"nodes": [], "links": []}
@@ -391,7 +391,7 @@ class FileSystem():
         :param output_path: location and path to save the flat file (ex.
             'results\\cd_output.json')
         :type output_path: string, optional (defaults to filesystem path)
-        :param ignore: list of CyberDEM objects or actions (as strings) not to
+        :param ignore: list of Cyber DEM objects or actions (as strings) not to
             indclude in the file
         :type ignore: list of strings, optional
 
@@ -402,11 +402,11 @@ class FileSystem():
 
         # Check for bad input
         if not isinstance(ignore, list):
-            raise TypeError("\"ignore\" must be a list of CyberDEM objects")
+            raise TypeError("\"ignore\" must be a list of Cyber DEM objects")
         for obj_type in ignore:
             if obj_type not in self.obj_types:
                 raise ValueError(
-                    f"{obj_type} in 'ignore' is not a CyberDEM object or "
+                    f"{obj_type} in 'ignore' is not a Cyber DEM object or "
                     f"action")
 
         # iterate through all folders in the file path and add objects to data
