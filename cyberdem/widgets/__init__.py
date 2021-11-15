@@ -1,7 +1,7 @@
 """
-Various helpful functions for using CyberDEM
+Various helpful functions for using Cyber DEM
 
-CyberDEM Python
+Cyber DEM Python
 
 Copyright 2020 Carnegie Mellon University.
 
@@ -41,7 +41,7 @@ def generate_network(
         of accounts and the amount of data and applications
     :type num_users: int, required
     :param filesystem: where to save the generated assets
-    :type filesystem: CyberDEM FileSystem, required
+    :type filesystem: Cyber DEM FileSystem, required
     :param purpose: general purpose of the network; affects the types of
         devices chosen, network architecture, and balance of user workstations
         to network devices
@@ -93,7 +93,7 @@ def generate_network(
             'Networking': .05,
             'Printer': .01,
             'Scanner': .01,
-            'StorageDevice': .02
+            'Storage': .02
             },
         'scada': {
             'Controller': .4,
@@ -178,7 +178,7 @@ def generate_network(
         net_link.network_interfaces = net_ints
         filesystem.save(net_link)
 
-    # Add users; under the current (Mar 2021) draft of CyberDEM, there isn't
+    # Add users; under the current (Mar 2021) draft of Cyber DEM, there isn't
     # a "user account" object, so using "Persona" object for now
     i = 1
     while i <= num_users:
@@ -188,7 +188,7 @@ def generate_network(
         i += 1
 
     # Add Operating Systems
-    # mapping operating systems available by device type (not in CyberDEM)
+    # mapping operating systems available by device type (not in Cyber DEM)
     os_to_device = {
         'Controller': [
             'Android',
@@ -251,7 +251,7 @@ def generate_network(
             'GNUUnix',
             'MicrosoftDOS',
             ],
-        'StorageDevice': [
+        'Storage': [
             'Android',
             'BSDUnix',
             'DECHP_UX',

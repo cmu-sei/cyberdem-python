@@ -12,7 +12,7 @@ long_desc = (
 
 setup(
     name="cyberdem",
-    version="0.0.6",
+    version="0.0.7",
     description="Cyber DEM SISO standard python helper package",
     long_description=long_desc,
     #long_description_content_type="text/markdown",
