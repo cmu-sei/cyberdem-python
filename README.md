@@ -1,11 +1,8 @@
 # Cyber Data Exchange Model (Cyber DEM) Python Package
 
 ## Overview
-Cyber DEM Python provides a Python API for the [Cyber Data Exchange Model](https://www.sisostds.org/StandardsActivities/DevelopmentGroups/CyberDEMPDG.aspx) (Cyber DEM). Cyber DEM Python provides methods to instantiate Cyber DEM objects and events, serialize and deserialize objects and events, and manipulate instantiated objects. It also provides basic searching and file management methods. 
 
-## Status
-
-Cyber DEM Python is based on the Cyber DEM standard that is currently in DRAFT format, and therefore subject to change. 
+Cyber DEM Python provides a Python API for the [Cyber Data Exchange Model](https://www.sisostds.org/StandardsActivities/DevelopmentGroups/CyberDEMPDG.aspx) (Cyber DEM). Cyber DEM Python provides methods to instantiate Cyber DEM objects and events, serialize and deserialize objects and events, and manipulate instantiated objects. It also provides basic searching and file management methods.
 
 ## Getting Started
 
@@ -13,8 +10,8 @@ These instructions will help you install a copy of the package on your local mac
 
 ### Install with pip
 
-```
-$ pip3 install cyberdem
+``` sh
+pip3 install cyberdem
 ```
 
 ### Installing from source
@@ -22,13 +19,13 @@ $ pip3 install cyberdem
 1. Download Cyber DEM Python and unzip the download folder
 2. From within the top-level cyberdem folder (where [setup.py](setup.py) is located) run
 
-```
-$ pip3 install .
+``` sh
+pip3 install .
 ```
 
 3. To test that cyberdem is installed properly run
 
-```
+``` py
 $ python3
 >>> from cyberdem import base
 >>> print(base.System())
@@ -39,7 +36,7 @@ System(
 
 You may also try running the example.py file downloaded with the zip file in [examples/scripts](examples/scripts).
 
-```
+``` py
 $ python3 example.py
 Creating new FileSystem path ./test-fs.
 
